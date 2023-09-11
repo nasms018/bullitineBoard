@@ -31,6 +31,3 @@ build/
 
 ### VS Code ###
 .vscode/
-
-###디비다른 프로퍼티###
-.properties
