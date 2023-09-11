@@ -54,8 +54,6 @@
 	</select>
 
 
-
-
 	<!-- 	public List<ReplyVO> findById(String id); -->
 	<select id="findById" resultMap="rmReplyVO">
 	select r.*, 
