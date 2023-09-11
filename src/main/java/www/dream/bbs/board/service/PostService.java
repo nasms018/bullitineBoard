@@ -141,6 +141,8 @@ public class PostService {
 
 		List<String> listNoun = new ArrayList<>();
 		for (String doc : docs) {
+			if( doc == null)
+				continue;
 			//대상이되는 문자열속의 명사 추출
 			doc = doc.trim();
 			if (!doc.isEmpty())
