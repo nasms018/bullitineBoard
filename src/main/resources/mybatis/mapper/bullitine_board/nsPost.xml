@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="www.dream.bbs.board.mapper.PostMapper">
+	<!-- resultMap : PROJECTION 결과를 객체 속성에 바인딩 -->
+	<resultMap id="rmReplyVO" extends="nsEntity.rmMasterEntity"
+		type="www.dream.bbs.board.model.ReplyVO">
+		<result property="content" column="content" />
+		<result property="hTier" column="h_tier" />
+		<!-- association : One 2 One 관계까지 속성에 한번에 넣기. 예 : 게시글의 작성자 누구? -->
+		<!-- columnPrefix : COLUMN 이름 중첩 시 그 해결방안 -->
+		<!-- notNullColumn : 정보가 있어야 객체 만들지요. 회원 탈퇴 시 null 처리 -->
+		<association property="writer" columnPrefix="w_" notNullColumn="id"
+			resultMap="www.dream.bbs.party.mapper.PartyMapper.rmPartyVO" />
+		<!-- discriminator : 상속 구조 해결 책 -->
+		<discriminator javaType="String" column="descrim">
+			<case value="post" resultMap="rmPostVO" />
+		</discriminator>
+	</resultMap>
+
+	<!-- extends : 확장하기 = 상속 -->
+	<resultMap id="rmPostVO" extends="rmReplyVO"
+		type="www.dream.bbs.board.model.PostVO">
+		<result property="title" column="TITLE" />
+		<result property="readCnt" column="read_cnt" />
+		<result property="likeCnt" column="like_cnt" />
+		<result property="disCnt" column="dis_cnt" />
+	</resultMap>
+
+	<!-- public List<PostVO> listAllPost(String boardId);-->
+	<select id="listAllPost" resultMap="rmPostVO">
+	select p.*, w.id w_id, w.descrim w_descrim, w.name w_name, w.sex w_sex, w.reg_dt w_reg_dt, w.upt_dt w_upt_dt
+	  from T_reply p LEFT OUTER JOIN T_party w
+	       ON p.writer_id = w.id
+	 where p.bb_id = #{boardId}
+	</select>
+
+	<!-- 	public List<ReplyVO> findById(String id); -->
+	<select id="findById" resultMap="rmReplyVO">
+	select r.*, 
+		w.id w_id, w.descrim w_descrim, w.name w_name, w.nick w_nick, w.sex w_sex,
+		 w.reg_dt w_reg_dt, w.upt_dt w_upt_dt
+	  from T_reply r LEFT OUTER JOIN T_party w
+	       ON r.writer_id = w.id
+	 where r.id like CONCAT(#{id}, '%');
+	</select>
+	
+	<!-- public int createPost(PostVO post);-->
+	<insert id="createPost">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+    		select NEXT_PK('s_reply')
+  		</selectKey>
+		INSERT INTO T_reply(id, h_tier, descrim, bb_id, writer_id, TITLE, content)
+		VALUES (#{id}, 0, 'post', #{boardVO.id}, #{writer.id}, #{title}, #{content});
+	</insert>
+	<!-- public int createReply(@Param("parent") ReplyVO parent, @Param("reply") ReplyVO reply);-->
+	<insert id="createReply">
+		<selectKey keyProperty="id" resultType="String" order="BEFORE">
+    		select NEXT_PK('s_reply')
+  		</selectKey>
+		INSERT INTO T_reply(id, h_tier, descrim, writer_id, content)
+		VALUES (CONCAT(#{parent.id}, #{id}), #{parent.hTier} + 1, 'reply', #{reply.writer.id}, #{reply.content});
+	</insert>
+	
+	<!-- public int updatePost(PostVO post);-->
+	<update id="updatePost">
+	update T_reply
+	   set TITLE = #{title},
+	       content = #{content}
+	 where id = #{id} 
+	</update>
+	<!-- public int updateReply(ReplyVO reply);-->
+	<update id="updateReply">
+	update T_reply
+	   set content = #{content}
+	 where id = #{id} 
+	</update>
+	
+	<!-- public int deleteReply(String id);-->
+	<delete id="deleteReply">
+	delete from T_reply
+	 where id like CONCAT(#{id}, '%');
+	</delete>
+</mapper>
