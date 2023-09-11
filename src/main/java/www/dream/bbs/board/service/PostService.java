@@ -39,6 +39,14 @@ public class PostService {
 		return listResult;
 	}
 	
+	public List<PostVO> search(String boardId, String search) {
+		String[] arrSearch = search.split(" ");
+		if (arrSearch.length == 0)
+			return listAllPost(boardId);
+		List<PostVO> listResult = postMapper.searchByTfIdf(boardId, arrSearch);
+		return listResult;
+	}
+	
 	/** 원글 상세. {첨부파일 목록}, 댓글 목록이 내부 변수에 채워짐 */
 	public PostVO findById(String id) {
 		//postMapper.findById(id)는 id의 primary key 특성으로 사전순서가 보장되어 있음
@@ -88,6 +96,8 @@ public class PostService {
 		List<TagRelVO> list = listExistingTags.stream().map(tagVo->
 			new TagRelVO(new TagRelId("T_reply", post.getId(), tagVo.getId()), 
 					mapTF.get(tagVo.getWord()))).collect(Collectors.toList());
+		
+		//단어 등록
 		for (TagVO tagVo : listNewTags) {
 			TagRelId id = new TagRelId("T_reply", post.getId(), tagVo.getId());
 			list.add(new TagRelVO(id, mapTF.get(tagVo.getWord())));
@@ -161,5 +171,8 @@ public class PostService {
 		}
 		return mapWordCnt;
 	}
+
+
+
 	
 }

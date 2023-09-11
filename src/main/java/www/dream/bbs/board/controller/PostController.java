@@ -45,9 +45,17 @@ public class PostController {
 		return new ResponseEntity<>(listResult, HttpStatus.OK);
 	}
 	
+	// /post/anonymous/search/{boardId}/{search}
+	@GetMapping("/anonymous/search/{boardId}/{search}")
+	public ResponseEntity<List<PostVO>> search(@PathVariable String boardId, @PathVariable String search) {
+		List<PostVO> listResult = postService.search(boardId, search);
+		return new ResponseEntity<>(listResult, HttpStatus.OK);
+	}
+	
+	
 	/** 원글 상세. 첨부파일 목록, 댓글, 대댓 목록이 내부 변수에 채워짐 */
 	// /post/anonymous/getPost/p001
-	@GetMapping("/getPost/{id}")
+	@GetMapping("/anonymous/getPost/{id}")
 	public ResponseEntity<PostVO> findById(@PathVariable String id) {
 		PostVO post = postService.findById(id);
 		if (post == null)

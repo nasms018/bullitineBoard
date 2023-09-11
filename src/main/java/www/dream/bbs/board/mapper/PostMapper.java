@@ -12,6 +12,7 @@ import www.dream.bbs.board.model.ReplyVO;
 public interface PostMapper {
 	//LRCUD 순서로 함수들을 배치하여 빠르게 따라갈(추적성) 수 있도록 합니다.
 	public List<PostVO> listAllPost(String boardId);
+	public List<PostVO> searchByTfIdf(@Param("boardId")String boardId, @Param("arrSearch")String[] arrSearch);
 	public List<ReplyVO> findById(String id);
 	
 	/* affected row counts */
@@ -22,4 +23,5 @@ public interface PostMapper {
 	public int updateReply(ReplyVO reply);
 	
 	public int deleteReply(String id);
+
 }

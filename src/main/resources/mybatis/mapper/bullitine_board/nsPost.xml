@@ -37,6 +37,25 @@
 	 where p.bb_id = #{boardId}
 	</select>
 
+<!-- 	public List<PostVO> searchByTfIdf(@Param("boardId")String boardId, @Param("arrSearch")String[] arrSearch);-->
+	<select id="searchByTfIdf" resultMap="rmPostVO">
+	select p.*, w.id w_id, w.descrim w_descrim, w.name w_name, w.sex w_sex, w.reg_dt w_reg_dt, w.upt_dt w_upt_dt
+	  FROM t_tag t, t_tgt_tag  r,
+	       T_reply p LEFT OUTER JOIN T_party w
+	       ON p.writer_id = w.id
+	 WHERE t.word IN 
+			<foreach item="word" collection="arrSearch" open ="(" separator="," close=")">
+				#{word}
+			</foreach>
+	 AND t.id = r.tag_id
+	 AND r.tgt_name = 'T_reply'
+	 AND r.tgt_id = p.id
+	 AND p.bb_id =  #{boardId};
+	</select>
+
+
+
+
 	<!-- 	public List<ReplyVO> findById(String id); -->
 	<select id="findById" resultMap="rmReplyVO">
 	select r.*, 
@@ -55,6 +74,7 @@
 		INSERT INTO T_reply(id, h_tier, descrim, bb_id, writer_id, TITLE, content)
 		VALUES (#{id}, 0, 'post', #{boardVO.id}, #{writer.id}, #{title}, #{content});
 	</insert>
+	
 	<!-- public int createReply(@Param("parent") ReplyVO parent, @Param("reply") ReplyVO reply);-->
 	<insert id="createReply">
 		<selectKey keyProperty="id" resultType="String" order="BEFORE">
