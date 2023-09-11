@@ -57,6 +57,7 @@ public class SignService {
 						.map(GrantedAuthority::getAuthority)
 						.collect(Collectors.toList()))
 				.userId(user.getId())
+				.userNick(user.getNick())
 				.build();
 
 		LOGGER.info("[getSignInResult] SignInResultDto 객체에 값 주입");

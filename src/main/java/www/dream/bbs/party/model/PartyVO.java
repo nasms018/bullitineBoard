@@ -26,8 +26,8 @@ import www.dream.bbs.framework.property.anno.TargetProperty;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public abstract class PartyVO extends MasterEntity implements UserDetails {
-	@TargetProperty
 	private String name;
+	@TargetProperty
 	private String nick;
 	//@JsonIgnore	//pwd는 화면에 노출하는 대상이 아님! 보안!
 	private String pwd;

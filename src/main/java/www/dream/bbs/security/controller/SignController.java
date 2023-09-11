@@ -33,7 +33,7 @@ public class SignController {
 		this.signService = signService;
 	}
 
-	@GetMapping("/hi")
+	@GetMapping("/anonymous/hi")
 	public String sayHi() {
 		return "helllllo";
 	}

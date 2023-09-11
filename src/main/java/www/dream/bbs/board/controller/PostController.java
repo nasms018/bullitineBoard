@@ -12,6 +12,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +29,7 @@ import www.dream.bbs.framework.nlp.pos.service.NounExtractor;
 
 @RestController		//Container에 담기도록 지정
 @RequestMapping("/post")
+//@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "Requestor-Type", exposedHeaders = "x-auth-token")
 public class PostController {
 	@Autowired
 	private PostService postService;
@@ -45,7 +47,7 @@ public class PostController {
 	
 	/** 원글 상세. 첨부파일 목록, 댓글, 대댓 목록이 내부 변수에 채워짐 */
 	// /post/anonymous/getPost/p001
-	@GetMapping("/anonymous/getPost/{id}")
+	@GetMapping("/getPost/{id}")
 	public ResponseEntity<PostVO> findById(@PathVariable String id) {
 		PostVO post = postService.findById(id);
 		if (post == null)

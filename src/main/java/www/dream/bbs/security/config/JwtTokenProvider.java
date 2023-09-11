@@ -88,7 +88,7 @@ public class JwtTokenProvider {
 	 * @return String type Token 값
 	 */
 	public String resolveToken(HttpServletRequest request) {
-		return request.getHeader("X-AUTH-TOKEN");
+		return request.getHeader("x-auth-token");
 	}
 
 	// 예제 13.16

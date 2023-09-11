@@ -12,8 +12,20 @@ public class WebMvcConfig implements WebMvcConfigurer {
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")
 		.allowedOrigins("http://localhost:3000")
+		.exposedHeaders("x-auth-token")
 		.allowedMethods("OPTIONS", "GET", "POST", "PUT", "DELETE")
-		 .allowCredentials(true);;
+		//.allowedHeaders("x-auth-token", "Access-Control-Allow-Origin")
+		.allowCredentials(true);
+		 
+/*		
+		 WebConfigProperties.Cors cors = webConfigProperties.getCors();
+         registry.addMapping("/**")
+           .allowedOrigins(cors.getAllowedOrigins())
+           .allowedMethods(cors.getAllowedMethods())
+           .maxAge(cors.getMaxAge())
+           .allowedHeaders(cors.getAllowedHeaders())
+           .exposedHeaders(cors.getExposedHeaders());
+*/
 	}
 
 }

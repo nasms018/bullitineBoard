@@ -11,12 +11,13 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name="T_TAG")
 @AllArgsConstructor
 @Getter
+@Setter
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class TagVO {
 	@Id
@@ -31,6 +32,11 @@ public class TagVO {
 	public TagVO(String word, String 단어정의_설명) {
 		this.word = word;
 		this.단어정의_설명 = 단어정의_설명;
+	}
+	public TagVO(String word, String 단어정의_설명, long df) {
+		this.word = word;
+		this.단어정의_설명 = 단어정의_설명;
+		this.df = df;
 	}
 
 	public void setId(String id) {

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,11 +18,20 @@ import www.dream.bbs.board.model.PostVO;
 import www.dream.bbs.board.model.ReplyVO;
 import www.dream.bbs.framework.nlp.pos.service.NounExtractor;
 import www.dream.bbs.framework.property.PropertyExtractor;
+import www.dream.bbs.iis.model.TagRelId;
+import www.dream.bbs.iis.model.TagRelVO;
+import www.dream.bbs.iis.model.TagVO;
+import www.dream.bbs.iis.repository.TagRelRepository;
+import www.dream.bbs.iis.repository.TagRepository;
 
 @Service
 public class PostService {
 	@Autowired
 	private PostMapper postMapper;
+	@Autowired
+	private TagRepository tagRepository;
+	@Autowired
+	private TagRelRepository tagRelRepository;
 	
 	/** 게시판의 모든 원글 목록 조회 */
 	public List<PostVO> listAllPost(String boardId) {
@@ -57,9 +67,39 @@ public class PostService {
 	 */
 	@Transactional
 	public int createPost(PostVO post) {
-		//Map<String, Integer> mapTF = buildTF(post);
+		int cnt = postMapper.createPost(post);
+		
+		Map<String, Integer> mapTF = buildTF(post);
 
-		return postMapper.createPost(post);
+		//기존 단어 찾음. 기존 단어의 DF는 이 문서에서 나온 단어 출현 횟수를 올려주어야 함. 
+		List<TagVO> listExistingTags = tagRepository.findByWord(mapTF.keySet());
+		listExistingTags.stream().forEach(existingTag->existingTag.setDf(existingTag.getDf() + mapTF.get(existingTag.getWord())));
+		tagRepository.saveAll(listExistingTags);
+		
+		//새 단어 목록 찾기
+		List<String> listExistingWords = listExistingTags.stream().map(tagVo->tagVo.getWord()).collect(Collectors.toList());
+		List<String> listNewWords = new ArrayList<>(mapTF.keySet());
+		listNewWords.removeAll(listExistingWords);
+		List<TagVO> listNewTags = listNewWords.stream().map(newWord->
+			new TagVO(tagRepository.getId("s_tag"), newWord, "", mapTF.get(newWord))).collect(Collectors.toList());
+		tagRepository.saveAll(listNewTags);
+		
+		//게시물과 단어 사이의 관계 만들기
+		List<TagRelVO> list = listExistingTags.stream().map(tagVo->
+			new TagRelVO(new TagRelId("T_reply", post.getId(), tagVo.getId()), 
+					mapTF.get(tagVo.getWord()))).collect(Collectors.toList());
+		for (TagVO tagVo : listNewTags) {
+			TagRelId id = new TagRelId("T_reply", post.getId(), tagVo.getId());
+			list.add(new TagRelVO(id, mapTF.get(tagVo.getWord())));
+		}
+		/*
+		list.addAll(listNewTags.stream().map(tagVo->
+		new TagRelVO(new TagRelId("T_reply", post.getId(), tagVo.getId()), 
+				mapTF.get(tagVo.getWord()))).collect(Collectors.toList()));
+		*/
+		tagRelRepository.saveAll(list);
+		
+		return cnt;
 	}
 	
 	/** 댓글 달기. parent의 hid의 연결된 hid 만들기 */
@@ -96,20 +136,26 @@ public class PostService {
 
 	 */
 	private Map<String, Integer> buildTF(PostVO post) {
+		//대상이되는 문자열 추출
 		List<String> docs = PropertyExtractor.extractProperty(post);
 
 		List<String> listNoun = new ArrayList<>();
 		for (String doc : docs) {
-			listNoun.addAll(NounExtractor.extracteNoun(doc));
+			//대상이되는 문자열속의 명사 추출
+			doc = doc.trim();
+			if (!doc.isEmpty())
+				listNoun.addAll(NounExtractor.extracteNoun(doc));
 		}
 
-		List<String> listTag = post.getListTag();
+		//게시글 수정 처리는 미루어 둘 것임
 		Map<String, Integer> mapWordCnt = new HashMap<>();
-		listTag.forEach(tag->mapWordCnt.put(tag, 1));
-		listNoun.retainAll(listTag);
 		
 		for (String noun : listNoun) {
-			mapWordCnt.put(noun, mapWordCnt.get(noun) + 1);
+			if (mapWordCnt.containsKey(noun)) {
+				mapWordCnt.put(noun, mapWordCnt.get(noun) + 1);
+			} else {
+				mapWordCnt.put(noun, 1);
+			}
 		}
 		return mapWordCnt;
 	}

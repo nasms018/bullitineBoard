@@ -31,6 +31,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.httpBasic().disable() // REST API는 UI를 사용하지 않으므로 기본설정을 비활성화
+				//.cors().and()
 				.csrf().disable() // REST API는 csrf 보안이 필요 없으므로 비활성화
 				// JWT Token 인증방식으로 세션은 필요없으므로 비활성화
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) 
@@ -40,6 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				 * "/sign-api/exception").permitAll() // 가입 및 로그인 주소는 허용
 				 */
 				 .antMatchers("/sign-api/sign-in").permitAll() // 가입 및 로그인 주소는 허용
+				 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll() // 가입 및 로그인 주소는 허용
 				// 중간에 anonymous이 있는 모든 GET 요청은 허용. 되면 좋고 말면 고치고
 				.antMatchers("/**/anonymous/**").permitAll() 
 				.antMatchers("**exception**").permitAll()
