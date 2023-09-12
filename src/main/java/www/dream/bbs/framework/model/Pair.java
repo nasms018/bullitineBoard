@@ -5,11 +5,11 @@ package www.dream.bbs.framework.model;
  * @param <F>
  * @param <S>
  */
-public class DreamPair<F, S> {
+public class Pair<F, S> {
 	private F firstVal;
 	private S secondVal;
 	
-	public DreamPair(F firstVal, S secondVal) {
+	public Pair(F firstVal, S secondVal) {
 		this.firstVal = firstVal;
 		this.secondVal = secondVal;
 	}
