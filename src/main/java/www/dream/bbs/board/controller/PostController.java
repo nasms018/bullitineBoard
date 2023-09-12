@@ -25,7 +25,7 @@ import www.dream.bbs.board.model.PostVO;
 import www.dream.bbs.board.model.ReplyVO;
 import www.dream.bbs.board.service.PostService;
 import www.dream.bbs.framework.model.PagingDTO;
-import www.dream.bbs.framework.model.Pair;
+import www.dream.bbs.framework.model.DreamPair;
 import www.dream.bbs.framework.nlp.pos.service.NounExtractor;
 
 @RestController		//Container에 담기도록 지정
@@ -41,15 +41,15 @@ public class PostController {
 	
 	// /post/anonymous/listAll/0001/1
 	@GetMapping("/anonymous/listAll/{boardId}/{page}")
-	public ResponseEntity<Pair<List<PostVO>, PagingDTO>> listAllPost(@PathVariable String boardId, @PathVariable int page) {
-		Pair<List<PostVO>, PagingDTO> result = postService.listAllPost(boardId, page);
+	public ResponseEntity<DreamPair<List<PostVO>, PagingDTO>> listAllPost(@PathVariable String boardId, @PathVariable int page) {
+		DreamPair<List<PostVO>, PagingDTO> result = postService.listAllPost(boardId, page);
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 	
 	// /post/anonymous/search/{boardId}/{search}/{page}
 	@GetMapping("/anonymous/search/{boardId}/{search}/{page}")
-	public ResponseEntity<Pair<List<PostVO>, PagingDTO>> search(@PathVariable String boardId, @PathVariable String search, @PathVariable int page) {
-		Pair<List<PostVO>, PagingDTO> result = postService.search(boardId, search, page);
+	public ResponseEntity<DreamPair<List<PostVO>, PagingDTO>> search(@PathVariable String boardId, @PathVariable String search, @PathVariable int page) {
+		DreamPair<List<PostVO>, PagingDTO> result = postService.search(boardId, search, page);
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 	
