@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import www.dream.bbs.board.mapper.PostMapper;
 import www.dream.bbs.board.model.PostVO;
 import www.dream.bbs.board.model.ReplyVO;
+import www.dream.bbs.framework.model.PagingDTO;
+import www.dream.bbs.framework.model.Pair;
 import www.dream.bbs.framework.nlp.pos.service.NounExtractor;
 import www.dream.bbs.framework.property.PropertyExtractor;
 import www.dream.bbs.iis.model.TagRelId;
@@ -34,17 +36,30 @@ public class PostService {
 	private TagRelRepository tagRelRepository;
 	
 	/** 게시판의 모든 원글 목록 조회 */
-	public List<PostVO> listAllPost(String boardId) {
-		List<PostVO> listResult = postMapper.listAllPost(boardId);
-		return listResult;
+	public Pair<List<PostVO>, PagingDTO> listAllPost(String boardId, int page) {
+		PagingDTO paging = new PagingDTO(page);
+		List<PostVO> listResult = postMapper.listAllPost(boardId, paging);
+		long dataCount = postMapper.getFoundRows();
+		System.out.println("dataCount : " + dataCount);
+		paging.buildPagination(dataCount);
+		return new Pair(listResult, paging);
 	}
 	
-	public List<PostVO> search(String boardId, String search) {
+	public Pair<List<PostVO>, PagingDTO> search(String boardId, String search, int page) {
 		String[] arrSearch = search.split(" ");
-		if (arrSearch.length == 0)
-			return listAllPost(boardId);
-		List<PostVO> listResult = postMapper.searchByTfIdf(boardId, arrSearch);
-		return listResult;
+		if (arrSearch.length == 0) {
+			PagingDTO paging = new PagingDTO(page);
+			paging.buildPagination(0);
+			return new Pair(new ArrayList<>(), paging);
+		}
+			
+		PagingDTO paging = new PagingDTO(page);
+		List<PostVO> listResult = postMapper.searchByTfIdf(boardId, arrSearch, paging);
+		long dataCount = postMapper.getFoundRows();
+		System.out.println("dataCount : " + dataCount);
+		paging.buildPagination(dataCount);
+
+		return new Pair(listResult, paging);
 	}
 	
 	/** 원글 상세. {첨부파일 목록}, 댓글 목록이 내부 변수에 채워짐 */
@@ -75,21 +90,22 @@ public class PostService {
 	 */
 	@Transactional
 	public int createPost(PostVO post) {
+		//해당 게시판의 게시글 수(post_cnt 또한 올려야 한다)
+		
+		
 		int cnt = postMapper.createPost(post);
 		
 		Map<String, Integer> mapTF = buildTF(post);
 
 		//기존 단어 찾음. 기존 단어의 DF는 이 문서에서 나온 단어 출현 횟수를 올려주어야 함. 
 		List<TagVO> listExistingTags = tagRepository.findByWord(mapTF.keySet());
-		listExistingTags.stream().forEach(existingTag->existingTag.setDf(existingTag.getDf() + mapTF.get(existingTag.getWord())));
-		tagRepository.saveAll(listExistingTags);
 		
 		//새 단어 목록 찾기
 		List<String> listExistingWords = listExistingTags.stream().map(tagVo->tagVo.getWord()).collect(Collectors.toList());
 		List<String> listNewWords = new ArrayList<>(mapTF.keySet());
 		listNewWords.removeAll(listExistingWords);
 		List<TagVO> listNewTags = listNewWords.stream().map(newWord->
-			new TagVO(tagRepository.getId("s_tag"), newWord, "", mapTF.get(newWord))).collect(Collectors.toList());
+			new TagVO(tagRepository.getId("s_tag"), newWord, "")).collect(Collectors.toList());
 		tagRepository.saveAll(listNewTags);
 		
 		//게시물과 단어 사이의 관계 만들기

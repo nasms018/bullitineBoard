@@ -7,12 +7,15 @@ import org.apache.ibatis.annotations.Param;
 
 import www.dream.bbs.board.model.PostVO;
 import www.dream.bbs.board.model.ReplyVO;
+import www.dream.bbs.framework.model.PagingDTO;
 
 @Mapper		//Container에 담기도록 지정
 public interface PostMapper {
 	//LRCUD 순서로 함수들을 배치하여 빠르게 따라갈(추적성) 수 있도록 합니다.
-	public List<PostVO> listAllPost(String boardId);
-	public List<PostVO> searchByTfIdf(@Param("boardId")String boardId, @Param("arrSearch")String[] arrSearch);
+	public long getFoundRows();
+	public List<PostVO> listAllPost(@Param("boardId")String boardId, @Param("paging") PagingDTO paging);
+	public List<PostVO> searchByTfIdf(@Param("boardId")String boardId, 
+			@Param("arrSearch")String[] arrSearch, @Param("paging") PagingDTO paging);
 	public List<ReplyVO> findById(String id);
 	
 	/* affected row counts */

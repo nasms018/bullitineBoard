@@ -12,7 +12,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 import www.dream.bbs.board.model.PostVO;
 import www.dream.bbs.board.model.ReplyVO;
 import www.dream.bbs.board.service.PostService;
+import www.dream.bbs.framework.model.PagingDTO;
+import www.dream.bbs.framework.model.Pair;
 import www.dream.bbs.framework.nlp.pos.service.NounExtractor;
 
 @RestController		//Container에 담기도록 지정
@@ -38,18 +39,18 @@ public class PostController {
 		this.postService = postService;
 	}
 	
-	// /post/anonymous/listAll/000n
-	@GetMapping("/anonymous/listAll/{boardId}")
-	public ResponseEntity<List<PostVO>> listAllPost(@PathVariable String boardId) {
-		List<PostVO> listResult = postService.listAllPost(boardId);
-		return new ResponseEntity<>(listResult, HttpStatus.OK);
+	// /post/anonymous/listAll/0001/1
+	@GetMapping("/anonymous/listAll/{boardId}/{page}")
+	public ResponseEntity<Pair<List<PostVO>, PagingDTO>> listAllPost(@PathVariable String boardId, @PathVariable int page) {
+		Pair<List<PostVO>, PagingDTO> result = postService.listAllPost(boardId, page);
+		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 	
-	// /post/anonymous/search/{boardId}/{search}
-	@GetMapping("/anonymous/search/{boardId}/{search}")
-	public ResponseEntity<List<PostVO>> search(@PathVariable String boardId, @PathVariable String search) {
-		List<PostVO> listResult = postService.search(boardId, search);
-		return new ResponseEntity<>(listResult, HttpStatus.OK);
+	// /post/anonymous/search/{boardId}/{search}/{page}
+	@GetMapping("/anonymous/search/{boardId}/{search}/{page}")
+	public ResponseEntity<Pair<List<PostVO>, PagingDTO>> search(@PathVariable String boardId, @PathVariable String search, @PathVariable int page) {
+		Pair<List<PostVO>, PagingDTO> result = postService.search(boardId, search, page);
+		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 	
 	

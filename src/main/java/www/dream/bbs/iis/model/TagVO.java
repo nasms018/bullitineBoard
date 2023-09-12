@@ -25,18 +25,13 @@ public class TagVO {
 	private String word;
 	@Column(name="description")
 	private String 단어정의_설명;
-	private long df;
+
 	
 	public TagVO() {}
 	
 	public TagVO(String word, String 단어정의_설명) {
 		this.word = word;
 		this.단어정의_설명 = 단어정의_설명;
-	}
-	public TagVO(String word, String 단어정의_설명, long df) {
-		this.word = word;
-		this.단어정의_설명 = 단어정의_설명;
-		this.df = df;
 	}
 
 	public void setId(String id) {

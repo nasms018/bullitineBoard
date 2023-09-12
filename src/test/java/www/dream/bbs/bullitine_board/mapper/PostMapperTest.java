@@ -13,6 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import www.dream.bbs.board.mapper.PostMapper;
 import www.dream.bbs.board.model.PostVO;
 import www.dream.bbs.board.model.ReplyVO;
+import www.dream.bbs.framework.model.PagingDTO;
 
 @ExtendWith(SpringExtension.class)
 @MybatisTest
@@ -26,7 +27,7 @@ public class PostMapperTest {
     @DisplayName("listAllPost Test")
     public void listAllPost() {
     	try {
-    		List<PostVO> l = mapper.listAllPost("000n");
+    		List<PostVO> l = mapper.listAllPost("000n", new PagingDTO(1) );
     		
     		for (PostVO p : l) {
     			System.out.println(p);

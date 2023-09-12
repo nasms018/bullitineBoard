@@ -27,13 +27,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest servletRequest, HttpServletResponse servletResponse,
 			FilterChain filterChain) throws ServletException, IOException {
-		//Header, Value log 찍기...
+		/*Header, Value log 찍기...
 		Enumeration<String> headerNames =  servletRequest.getHeaderNames();
 		while (headerNames.hasMoreElements()) {
 			String header = headerNames.nextElement();
 			String val = servletRequest.getHeader(header);
-			System.out.println("header : " + header + ", val : " + val);
-		}
+			//System.out.println("header : " + header + ", val : " + val);
+			
+		}*/
 		
 		String token = jwtTokenProvider.resolveToken(servletRequest);
 		LOGGER.info("[doFilterInternal] token 값 추출 완료. token : {}", token);
