@@ -1,7 +1,7 @@
 package www.dream.bbs.framework.model;
 
 public class PagingDTO {
-	private static final int LIMIT = 2;
+	private static final int LIMIT = 10;
 	private static final int BTN_CNT = 10;
 
 	private int page;

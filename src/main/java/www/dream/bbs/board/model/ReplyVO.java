@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import www.dream.bbs.framework.model.MasterEntity;
 import www.dream.bbs.framework.property.anno.TargetProperty;
-import www.dream.bbs.party.model.PersonVO;
+import www.dream.bbs.party.model.PartyVO;
 
 @Getter
 @Setter
@@ -18,7 +18,7 @@ import www.dream.bbs.party.model.PersonVO;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class ReplyVO extends MasterEntity {
 	@TargetProperty
-	private PersonVO writer;	//게시물 작성자
+	private PartyVO writer;	//게시물 작성자
 	@TargetProperty
 	private String content;	//내용
 	private int hTier;

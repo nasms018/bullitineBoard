@@ -17,6 +17,7 @@ public interface PostMapper {
 	public List<PostVO> searchByTfIdf(@Param("boardId")String boardId, 
 			@Param("arrSearch")String[] arrSearch, @Param("paging") PagingDTO paging);
 	public List<ReplyVO> findById(String id);
+	public void incReadCnt(String id);
 	
 	/* affected row counts */
 	public int createPost(PostVO post);

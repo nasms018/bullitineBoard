@@ -24,4 +24,9 @@ public class PostVO extends ReplyVO {
 
 	/** DTO로 활용되는 속성 추가적 정의부분. */
 	private List<String> listTag;
+
+	public void incReadCnt() {
+		readCnt++;
+		
+	}
 }

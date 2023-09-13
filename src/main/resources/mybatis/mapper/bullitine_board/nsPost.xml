@@ -41,6 +41,7 @@
 		  from T_reply p LEFT OUTER JOIN T_party w
 		    ON p.writer_id = w.id
 		 where p.bb_id = #{boardId}
+		 order by p.id desc
 		   limit #{paging.limit} offset #{paging.offset}
 	</select>
 
@@ -100,6 +101,13 @@
 		   ON r.writer_id = w.id
 		where r.id like CONCAT(#{id}, '%');
 	</select>
+	<!-- public void incReadCnt(String id); -->
+	<update id="incReadCnt">
+		 update T_reply
+		    set upt_dt = upt_dt,
+		    	read_cnt = read_cnt + 1
+		  where id = #{id}
+	</update>
 
 	<!-- public int createPost(PostVO post); -->
 	<insert id="createPost">

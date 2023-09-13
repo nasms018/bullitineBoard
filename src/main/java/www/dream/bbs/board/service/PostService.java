@@ -17,7 +17,7 @@ import www.dream.bbs.board.mapper.PostMapper;
 import www.dream.bbs.board.model.PostVO;
 import www.dream.bbs.board.model.ReplyVO;
 import www.dream.bbs.framework.model.PagingDTO;
-import www.dream.bbs.framework.model.Pair;
+import www.dream.bbs.framework.model.DreamPair;
 import www.dream.bbs.framework.nlp.pos.service.NounExtractor;
 import www.dream.bbs.framework.property.PropertyExtractor;
 import www.dream.bbs.iis.model.TagRelId;
@@ -36,21 +36,21 @@ public class PostService {
 	private TagRelRepository tagRelRepository;
 	
 	/** 게시판의 모든 원글 목록 조회 */
-	public Pair<List<PostVO>, PagingDTO> listAllPost(String boardId, int page) {
+	public DreamPair<List<PostVO>, PagingDTO> listAllPost(String boardId, int page) {
 		PagingDTO paging = new PagingDTO(page);
 		List<PostVO> listResult = postMapper.listAllPost(boardId, paging);
 		long dataCount = postMapper.getFoundRows();
 		System.out.println("dataCount : " + dataCount);
 		paging.buildPagination(dataCount);
-		return new Pair(listResult, paging);
+		return new DreamPair(listResult, paging);
 	}
 	
-	public Pair<List<PostVO>, PagingDTO> search(String boardId, String search, int page) {
+	public DreamPair<List<PostVO>, PagingDTO> search(String boardId, String search, int page) {
 		String[] arrSearch = search.split(" ");
 		if (arrSearch.length == 0) {
 			PagingDTO paging = new PagingDTO(page);
 			paging.buildPagination(0);
-			return new Pair(new ArrayList<>(), paging);
+			return new DreamPair(new ArrayList<>(), paging);
 		}
 			
 		PagingDTO paging = new PagingDTO(page);
@@ -59,7 +59,7 @@ public class PostService {
 		System.out.println("dataCount : " + dataCount);
 		paging.buildPagination(dataCount);
 
-		return new Pair(listResult, paging);
+		return new DreamPair(listResult, paging);
 	}
 	
 	/** 원글 상세. {첨부파일 목록}, 댓글 목록이 내부 변수에 채워짐 */
@@ -71,6 +71,9 @@ public class PostService {
 		}
 		
 		PostVO ret = (PostVO) oneDimList.get(0);
+		ret.incReadCnt();
+		postMapper.incReadCnt(ret.getId());
+		
 		Map<String, ReplyVO> map = new HashMap<>();
 		for (ReplyVO reply : oneDimList) {
 			map.put(reply.getId(), reply);

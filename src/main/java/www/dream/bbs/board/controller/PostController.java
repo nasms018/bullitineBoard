@@ -12,6 +12,8 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,8 +27,9 @@ import www.dream.bbs.board.model.PostVO;
 import www.dream.bbs.board.model.ReplyVO;
 import www.dream.bbs.board.service.PostService;
 import www.dream.bbs.framework.model.PagingDTO;
-import www.dream.bbs.framework.model.Pair;
+import www.dream.bbs.framework.model.DreamPair;
 import www.dream.bbs.framework.nlp.pos.service.NounExtractor;
+import www.dream.bbs.party.model.PartyVO;
 
 @RestController		//Container에 담기도록 지정
 @RequestMapping("/post")
@@ -41,18 +44,17 @@ public class PostController {
 	
 	// /post/anonymous/listAll/0001/1
 	@GetMapping("/anonymous/listAll/{boardId}/{page}")
-	public ResponseEntity<Pair<List<PostVO>, PagingDTO>> listAllPost(@PathVariable String boardId, @PathVariable int page) {
-		Pair<List<PostVO>, PagingDTO> result = postService.listAllPost(boardId, page);
+	public ResponseEntity<DreamPair<List<PostVO>, PagingDTO>> listAllPost(@PathVariable String boardId, @PathVariable int page) {
+		DreamPair<List<PostVO>, PagingDTO> result = postService.listAllPost(boardId, page);
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 	
 	// /post/anonymous/search/{boardId}/{search}/{page}
 	@GetMapping("/anonymous/search/{boardId}/{search}/{page}")
-	public ResponseEntity<Pair<List<PostVO>, PagingDTO>> search(@PathVariable String boardId, @PathVariable String search, @PathVariable int page) {
-		Pair<List<PostVO>, PagingDTO> result = postService.search(boardId, search, page);
+	public ResponseEntity<DreamPair<List<PostVO>, PagingDTO>> search(@PathVariable String boardId, @PathVariable String search, @PathVariable int page) {
+		DreamPair<List<PostVO>, PagingDTO> result = postService.search(boardId, search, page);
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
-	
 	
 	/** 원글 상세. 첨부파일 목록, 댓글, 대댓 목록이 내부 변수에 채워짐 */
 	// /post/anonymous/getPost/p001
@@ -77,8 +79,10 @@ public class PostController {
 	}
 
 	/** 게시판에 원글 달기 /post/createPost */
-	@PostMapping("/anonymous/createPost")
-	public ResponseEntity<Integer> createPost(@RequestBody PostVO post) {
+	@PostMapping("/createPost")
+	@PreAuthorize("hasAnyRole('manager','member')")
+	public ResponseEntity<Integer> createPost(@AuthenticationPrincipal PartyVO user, @RequestBody PostVO post) {
+		post.setWriter(user);
 		return new ResponseEntity<>(postService.createPost(post), HttpStatus.OK);
 	}
 
