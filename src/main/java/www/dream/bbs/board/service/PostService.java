@@ -40,7 +40,7 @@ public class PostService {
 		PagingDTO paging = new PagingDTO(page);
 		List<PostVO> listResult = postMapper.listAllPost(boardId, paging);
 		long dataCount = postMapper.getFoundRows();
-		System.out.println("dataCount : " + dataCount);
+		//System.out.println("dataCount : " + dataCount);
 		paging.buildPagination(dataCount);
 		return new DreamPair(listResult, paging);
 	}
@@ -56,7 +56,7 @@ public class PostService {
 		PagingDTO paging = new PagingDTO(page);
 		List<PostVO> listResult = postMapper.searchByTfIdf(boardId, arrSearch, paging);
 		long dataCount = postMapper.getFoundRows();
-		System.out.println("dataCount : " + dataCount);
+		//System.out.println("dataCount : " + dataCount);
 		paging.buildPagination(dataCount);
 
 		return new DreamPair(listResult, paging);
@@ -94,8 +94,7 @@ public class PostService {
 	@Transactional
 	public int createPost(PostVO post) {
 		//해당 게시판의 게시글 수(post_cnt 또한 올려야 한다)
-		
-		
+
 		int cnt = postMapper.createPost(post);
 		
 		Map<String, Integer> mapTF = buildTF(post);

@@ -92,9 +92,10 @@ public class PostController {
 		return new ResponseEntity<>(postService.createReply(parent, reply), HttpStatus.OK);
 	}
 	
-	/** */
+	/** 자신이 작성한 게시물에 대하여 허용 */
 	@PutMapping("/updatePost")
-	public ResponseEntity<Integer> updatePost(PostVO post) {
+	@PreAuthorize("hasAnyRole('manager','member')")
+	public ResponseEntity<Integer> updatePost(@AuthenticationPrincipal PartyVO user, @RequestBody PostVO post) {
 		return new ResponseEntity<>(postService.updatePost(post), HttpStatus.OK);
 	}
 

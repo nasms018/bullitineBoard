@@ -12,15 +12,15 @@
 		<!-- association : One 2 One 관계까지 속성에 한번에 넣기. 예 : 게시글의 작성자 누구? -->
 		<!-- columnPrefix : COLUMN 이름 중첩 시 그 해결방안 -->
 		<!-- notNullColumn : 정보가 있어야 객체 만들지요. 회원 탈퇴 시 null 처리 -->
-		<association property="writer" columnPrefix="w_"
-			notNullColumn="id"
+		<association property="writer" columnPrefix="w_" notNullColumn="id"
 			resultMap="www.dream.bbs.party.mapper.PartyMapper.rmPartyVO" />
+ 		
 		<!-- discriminator : 상속 구조 해결 책 -->
 		<discriminator javaType="String" column="descrim">
 			<case value="post" resultMap="rmPostVO" />
 		</discriminator>
 	</resultMap>
-
+	
 	<!-- extends : 확장하기 = 상속 -->
 	<resultMap id="rmPostVO" extends="rmReplyVO"
 		type="www.dream.bbs.board.model.PostVO">
@@ -28,6 +28,8 @@
 		<result property="readCnt" column="read_cnt" />
 		<result property="likeCnt" column="like_cnt" />
 		<result property="disCnt" column="dis_cnt" />
+		<association property="boardVO" columnPrefix="bb_" 
+			resultMap="www.dream.bbs.board.mapper.BoardMapper.rmBoardVO" />
 	</resultMap>
 	<!-- 			public long getFoundRows(); -->
 	<select id="getFoundRows" resultType="long">
