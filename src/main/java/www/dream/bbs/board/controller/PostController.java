@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import www.dream.bbs.board.model.PostVO;
 import www.dream.bbs.board.model.ReplyVO;
 import www.dream.bbs.board.service.PostService;
+import www.dream.bbs.common.exception.BusinessException;
 import www.dream.bbs.framework.model.PagingDTO;
 import www.dream.bbs.framework.model.DreamPair;
 import www.dream.bbs.framework.nlp.pos.service.NounExtractor;
@@ -79,24 +80,16 @@ public class PostController {
 	}
 
 	/** 게시판에 원글 달기 /post/createPost */
-	@PostMapping("/createPost")
+	@PostMapping("/mngPost")
 	@PreAuthorize("hasAnyRole('manager','member')")
-	public ResponseEntity<Integer> createPost(@AuthenticationPrincipal PartyVO user, @RequestBody PostVO post) {
-		post.setWriter(user);
-		return new ResponseEntity<>(postService.createPost(post), HttpStatus.OK);
+	public ResponseEntity<Integer> mngPost(@AuthenticationPrincipal PartyVO user, @RequestBody PostVO post) throws BusinessException {
+		return new ResponseEntity<>(postService.mngPost(post, user), HttpStatus.OK);
 	}
 
 	/** 댓글 달기. parent의 hid의 연결된 hid 만들기 */
 	@PostMapping("/createReply")
 	public ResponseEntity<Integer> createReply(ReplyVO parent, ReplyVO reply) {
 		return new ResponseEntity<>(postService.createReply(parent, reply), HttpStatus.OK);
-	}
-	
-	/** 자신이 작성한 게시물에 대하여 허용 */
-	@PutMapping("/updatePost")
-	@PreAuthorize("hasAnyRole('manager','member')")
-	public ResponseEntity<Integer> updatePost(@AuthenticationPrincipal PartyVO user, @RequestBody PostVO post) {
-		return new ResponseEntity<>(postService.updatePost(post), HttpStatus.OK);
 	}
 
 	/** */

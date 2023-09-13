@@ -12,12 +12,15 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import www.dream.bbs.board.mapper.PostMapper;
 import www.dream.bbs.board.model.PostVO;
 import www.dream.bbs.board.model.ReplyVO;
-import www.dream.bbs.framework.model.PagingDTO;
+import www.dream.bbs.common.exception.BusinessException;
+import www.dream.bbs.common.exception.ErrorCode;
 import www.dream.bbs.framework.model.DreamPair;
+import www.dream.bbs.framework.model.PagingDTO;
 import www.dream.bbs.framework.nlp.pos.service.NounExtractor;
 import www.dream.bbs.framework.property.PropertyExtractor;
 import www.dream.bbs.iis.model.TagRelId;
@@ -25,6 +28,7 @@ import www.dream.bbs.iis.model.TagRelVO;
 import www.dream.bbs.iis.model.TagVO;
 import www.dream.bbs.iis.repository.TagRelRepository;
 import www.dream.bbs.iis.repository.TagRepository;
+import www.dream.bbs.party.model.PartyVO;
 
 @Service
 public class PostService {
@@ -92,9 +96,26 @@ public class PostService {
 	 * 모든 tag와 TF 등재 및 tag의 df 수정
 	 */
 	@Transactional
-	public int createPost(PostVO post) {
-		//해당 게시판의 게시글 수(post_cnt 또한 올려야 한다)
+	public int mngPost(PostVO post, PartyVO user) throws BusinessException {
+		//post.id 있으면 수정, 없으면 신규.
+		if (ObjectUtils.isEmpty(post.getId())){
+			post.setWriter(user);
+			int cnt = createPost(post);
+			return cnt;
+		} else {
+			//수정시 post.writer.id == Principal  user.id 이어야 함을 검사
+			//다르면 BusinessException를 발생 시킨다
+			if(!(post.getWriter().getId().equals(user.getId()))) 
+				throw new BusinessException(ErrorCode.INVAID_UPDATE);
+			int cnt = updatePost(post);
+			return cnt;
+			
+		}
+		
+	}
 
+	private int createPost(PostVO post) {
+		//해당 게시판의 게시글 수(post_cnt 또한 올려야 한다)
 		int cnt = postMapper.createPost(post);
 		
 		Map<String, Integer> mapTF = buildTF(post);
@@ -126,7 +147,6 @@ public class PostService {
 				mapTF.get(tagVo.getWord()))).collect(Collectors.toList()));
 		*/
 		tagRelRepository.saveAll(list);
-		
 		return cnt;
 	}
 	

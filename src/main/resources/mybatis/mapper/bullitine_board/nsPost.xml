@@ -31,7 +31,7 @@
 		<association property="boardVO" columnPrefix="bb_" 
 			resultMap="www.dream.bbs.board.mapper.BoardMapper.rmBoardVO" />
 	</resultMap>
-	<!-- 			public long getFoundRows(); -->
+	<!-- 	public long getFoundRows(); -->
 	<select id="getFoundRows" resultType="long">
 		select FOUND_ROWS()
 	</select>
