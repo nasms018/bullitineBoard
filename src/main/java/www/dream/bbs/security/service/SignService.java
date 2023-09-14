@@ -36,12 +36,13 @@ public class SignService {
 	}
 
 	/** 로그인 처리 */
-	public SignInResultDto signIn(SignInDTO signInDTO) throws BusinessException {
+	public SignInResultDto signIn(SignInDTO signInDTO) {
 		LOGGER.info("[getSignInResult] signDataHandler 로 회원 정보 요청");
 		PartyVO user = partyMapper.findByNick(signInDTO.getId());
 
 		LOGGER.info("[getSignInResult] 패스워드 비교 수행");
-		if (!passwordEncoder.matches(signInDTO.getPassword(), user.getPassword())) {
+		//user 없는 상황 및 패스워드 오류 상황을 명확하게 구분하여 알려주지 않음.(보안성 강화)
+		if (user == null || !passwordEncoder.matches(signInDTO.getPassword(), user.getPassword())) {
 			throw new BusinessException("잘못된 암호", ErrorCode.WRONG_PWD);
 		}
 		LOGGER.info("[getSignInResult] 패스워드 일치");
