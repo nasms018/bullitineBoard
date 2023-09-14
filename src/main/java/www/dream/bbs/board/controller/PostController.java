@@ -79,7 +79,7 @@ public class PostController {
 		return new ResponseEntity<>(ret, HttpStatus.OK);
 	}
 
-	/** 게시판에 원글 달기 /post/createPost */
+	/** 게시판에 원글 달기 /post/mngPost */
 	@PostMapping("/mngPost")
 	@PreAuthorize("hasAnyRole('manager','member')")
 	public ResponseEntity<Integer> mngPost(@AuthenticationPrincipal PartyVO user, @RequestBody PostVO post) throws BusinessException {
