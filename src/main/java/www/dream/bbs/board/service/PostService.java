@@ -185,8 +185,7 @@ public class PostService {
 		// 우리집 : 1
 		// 강아지 : 1
 		// 성격 : 1
-
-	 */
+	 */ 
 	private Map<String, Integer> buildTF(PostVO post) {
 		//대상이되는 문자열 추출
 		List<String> docs = PropertyExtractor.extractProperty(post);
@@ -213,8 +212,5 @@ public class PostService {
 		}
 		return mapWordCnt;
 	}
-
-
-
 	
 }

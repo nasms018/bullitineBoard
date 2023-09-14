@@ -4,7 +4,8 @@ package www.dream.bbs.framework.model;
  * Type이 달라도 정보 쌍을 담을 수 있는 그릇
  * @param <F>
  * @param <S>
- */
+ */ 
+
 public class DreamPair<F, S> {
 	private F firstVal;
 	private S secondVal;
