@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import www.dream.bbs.common.exception.BusinessException;
 import www.dream.bbs.security.dto.SignInDTO;
 import www.dream.bbs.security.dto.SignInResultDto;
 import www.dream.bbs.security.service.SignService;
@@ -40,7 +39,7 @@ public class SignController {
 	}
 	
 	@PostMapping(value = "/sign-in")
-	public SignInResultDto signIn(@RequestBody SignInDTO signInDTO) throws BusinessException {
+	public SignInResultDto signIn(@RequestBody SignInDTO signInDTO) throws RuntimeException {
 		LOGGER.info("[signIn] 로그인을 시도하고 있습니다. id : {}, pw : ****", signInDTO.getId());
 		SignInResultDto signInResultDto = signService.signIn(signInDTO);
 
@@ -54,6 +53,22 @@ public class SignController {
 	@GetMapping(value = "/exception")
 	public void exceptionTest() throws RuntimeException {
 		throw new RuntimeException("접근이 금지되었습니다.");
+	}
+
+	@ExceptionHandler(value = RuntimeException.class)
+	public ResponseEntity<Map<String, String>> ExceptionHandler(RuntimeException e) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		// responseHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
+		HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+
+		LOGGER.error("ExceptionHandler 호출, {}, {}", e.getCause(), e.getMessage());
+
+		Map<String, String> map = new HashMap<>();
+		map.put("error type", httpStatus.getReasonPhrase());
+		map.put("code", "400");
+		map.put("message", "에러 발생");
+
+		return new ResponseEntity<>(map, responseHeaders, httpStatus);
 	}
 
 }

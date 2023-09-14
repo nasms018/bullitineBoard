@@ -7,9 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,18 +96,16 @@ public class PostService {
 	 * 모든 tag와 TF 등재 및 tag의 df 수정
 	 */
 	@Transactional
-	public int mngPost(PostVO post, PartyVO user) {
+	public int mngPost(PostVO post, PartyVO user) throws BusinessException {
 		//post.id 있으면 수정, 없으면 신규.
 		if (ObjectUtils.isEmpty(post.getId())){
 			post.setWriter(user);
-			//해당 게시판의 게시글 수(post_cnt 또한 올려줄까? 대쉬보드 용도로)
-			int cnt = postMapper.createPost(post);
-			createTagRelation(post);
+			int cnt = createPost(post);
 			return cnt;
 		} else {
 			//수정시 post.writer.id == Principal  user.id 이어야 함을 검사
 			//다르면 BusinessException를 발생 시킨다
-			if(!post.getWriter().getId().equals(user.getId())) 
+			if(!(post.getWriter().getId().equals(user.getId()))) 
 				throw new BusinessException(ErrorCode.INVAID_UPDATE);
 			int cnt = updatePost(post);
 			return cnt;
@@ -118,15 +113,19 @@ public class PostService {
 
 	}
 
-	private void createTagRelation(PostVO post) {
+	private int createPost(PostVO post) {
+		//해당 게시판의 게시글 수(post_cnt 또한 올려야 한다)
+		int cnt = postMapper.createPost(post);
+		
 		Map<String, Integer> mapTF = buildTF(post);
 
 		//기존 단어 찾음. 기존 단어의 DF는 이 문서에서 나온 단어 출현 횟수를 올려주어야 함. 
 		List<TagVO> listExistingTags = tagRepository.findByWord(mapTF.keySet());
 		
-		//새 단어 목록 찾기. 성능을 고려한 개발. 따라서 정렬을 도입함
-		SortedSet<String> 기존단어목록 = new TreeSet(listExistingTags.stream().map(tagVo->tagVo.getWord()).collect(Collectors.toList()));
-		List<String> listNewWords = mapTF.keySet().stream().filter(word->!기존단어목록.contains(word)).collect(Collectors.toList());
+		//새 단어 목록 찾기
+		List<String> listExistingWords = listExistingTags.stream().map(tagVo->tagVo.getWord()).collect(Collectors.toList());
+		List<String> listNewWords = new ArrayList<>(mapTF.keySet());
+		listNewWords.removeAll(listExistingWords);
 		List<TagVO> listNewTags = listNewWords.stream().map(newWord->
 			new TagVO(tagRepository.getId("s_tag"), newWord, "")).collect(Collectors.toList());
 		tagRepository.saveAll(listNewTags);
@@ -147,7 +146,7 @@ public class PostService {
 				mapTF.get(tagVo.getWord()))).collect(Collectors.toList()));
 		*/
 		tagRelRepository.saveAll(list);
-
+		return cnt;
 	}
 	
 	/** 댓글 달기. parent의 hid의 연결된 hid 만들기 */
@@ -157,11 +156,7 @@ public class PostService {
 	
 	/** tf, df 정보 수정도 고려하여야 함. */
 	public int updatePost(PostVO post) {
-		tagRelRepository.deleteAllByPostId(post.getId());
-
-		int cnt = postMapper.updatePost(post);
-		createTagRelation(post);
-		return cnt;
+		return postMapper.updatePost(post);
 	}
 
 	/** */
@@ -202,7 +197,7 @@ public class PostService {
 		}
 
 		//게시글 수정 처리는 미루어 둘 것임
-		Map<String, Integer> mapWordCnt = new TreeMap<>();
+		Map<String, Integer> mapWordCnt = new HashMap<>();
 		
 		for (String noun : listNoun) {
 			if (mapWordCnt.containsKey(noun)) {
