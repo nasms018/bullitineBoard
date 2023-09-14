@@ -109,9 +109,8 @@ public class PostService {
 				throw new BusinessException(ErrorCode.INVAID_UPDATE);
 			int cnt = updatePost(post);
 			return cnt;
-			
 		}
-		
+
 	}
 
 	private int createPost(PostVO post) {
