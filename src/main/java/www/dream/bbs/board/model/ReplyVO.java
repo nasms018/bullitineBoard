@@ -25,6 +25,10 @@ public class ReplyVO extends MasterEntity {
 	//대댓 구조 만들기는 어떻게?
 	private List<ReplyVO> listReply;
 	
+	public ReplyVO(String id) {
+		super.setId(id);
+	}
+	
 	public String extractParentId() {
 		String myId = super.getId();
 		int len = myId.length();
