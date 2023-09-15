@@ -157,11 +157,12 @@
 	</insert>
 	<!-- public int createReply(@Param("parent") ReplyVO parent, @Param("reply") ReplyVO reply);-->
 	<insert id="createReply">
-		<selectKey keyProperty="id" resultType="String" order="BEFORE">
-    		select NEXT_PK('s_reply')
+		<selectKey keyProperty="reply.id" resultType="String" order="BEFORE">
+    		select CONCAT(#{parent.id}, NEXT_PK('s_reply'))
   		</selectKey>
 		INSERT INTO T_reply(id, h_tier, descrim, writer_id, content)
-		VALUES (CONCAT(#{parent.id}, #{id}), #{parent.hTier} + 1, 'reply', #{reply.writer.id}, #{reply.content});
+		VALUES (#{reply.id}, #{parent.hTier} + 1, 'reply', #{reply.writer.id}, #{reply.content});
+		
 	</insert>
 	
 	<!-- public int updatePost(PostVO post);-->

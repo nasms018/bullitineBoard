@@ -83,7 +83,7 @@ public class PostService {
 		for (ReplyVO reply : oneDimList) {
 			map.put(reply.getId(), reply);
 			
-			ReplyVO parent = map.get(reply.extractParentId());
+			ReplyVO parent = map.get(reply.getParentId());
 			if (parent != null) {
 				parent.appendReply(reply);
 			}
@@ -116,8 +116,10 @@ public class PostService {
 	}
 	
 	/** 댓글 달기. parent의 hid의 연결된 hid 만들기 */
-	public int createReply(ReplyVO parent, ReplyVO reply) {
-		return postMapper.createReply(parent, reply);
+	public ReplyVO createReply(ReplyVO parent, ReplyVO reply) {
+		int cnt = postMapper.createReply(parent, reply);
+		reply.setCurDate();
+		return reply;
 	}
 	
 	/** tf, df 정보 수정도 고려하여야 함. */

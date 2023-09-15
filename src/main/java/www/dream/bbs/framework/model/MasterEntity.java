@@ -22,6 +22,11 @@ public abstract class MasterEntity extends Entity {
 		super(id);
 	}
 
+	public void setCurDate() {
+		if(regDt == null) 
+			regDt = new Date();
+	}
+	
 	@Override
 	public String toString() {
 		return super.toString() + ", regDt=" + regDt + ", uptDt=" + uptDt;

@@ -29,7 +29,7 @@ public class ReplyVO extends MasterEntity {
 		super.setId(id);
 	}
 	
-	public String extractParentId() {
+	public String getParentId() {
 		String myId = super.getId();
 		int len = myId.length();
 		return myId.substring(0, len - ID_LENGTH);
