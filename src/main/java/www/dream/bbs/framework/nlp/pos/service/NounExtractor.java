@@ -12,17 +12,14 @@ public class NounExtractor {
 	public static List<String> extracteNoun(String document) {
 		KomoranResult analyzeResultList = komoran.analyze(document);
 		List<String> nounList = analyzeResultList.getNouns();
-		//nounList.addAll(analyzeResultList.getMorphesByTags("SL"));
 		return nounList;
 	}
 
-	/*
 	public static void main(String[] args) {
-		String data = "Don't be fooled by the dark sounding name, Mr. Jone's Orphanage is as cheery as cheery goes for a pastry shop";
-				List<String > list =extracteNoun(data);
-				for (String v : list) {
-					System.out.println(v);
-				}
-	}*/
+		//Komoran은 영문장에 대한.. 약함이... SL로만 한 덩치로 보임
+		String data = "Starting a home-based restaurant may be an ideal. it doesn't have a food chain or restaurant of their own.";
+		List<String> list = extracteNoun(data);
+		for (String v : list)
+			System.out.println(v);
+	}
 }
-

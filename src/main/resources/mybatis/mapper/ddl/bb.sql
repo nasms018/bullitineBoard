@@ -31,9 +31,10 @@ create table T_party(
 -- 로그인시 비교 대상인 암호까지 index에서 제공하여 table에 대한 접근을 방어하여 성능을 높임
 create index idx_party_nick on T_party(nick);
 drop index idx_party_nick on T_party;
+
 	values('????', 'Organization', 'Dream Company', 'sys', 암호화하여'sys');
+	
  (id, account_type, owner_id, respons_id, alive, reg_dt, upt_dt)
- 
 create table T_Accountability(
 	id			char(4) primary key,
 	account_type varchar(255),

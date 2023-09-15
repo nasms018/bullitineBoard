@@ -27,7 +27,7 @@ public class PostMapperTest {
     @DisplayName("listAllPost Test")
     public void listAllPost() {
     	try {
-    		List<PostVO> l = mapper.listAllPost("000n", new PagingDTO(1) );
+    		List<PostVO> l = mapper.listAllPost("000n", new PagingDTO(1));
     		
     		for (PostVO p : l) {
     			System.out.println(p);

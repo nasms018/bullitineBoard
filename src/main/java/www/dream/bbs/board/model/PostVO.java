@@ -27,6 +27,5 @@ public class PostVO extends ReplyVO {
 
 	public void incReadCnt() {
 		readCnt++;
-		
 	}
 }

@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,11 +47,11 @@ public class PostService {
 		PagingDTO paging = new PagingDTO(page);
 		List<PostVO> listResult = postMapper.listAllPost(boardId, paging);
 		long dataCount = postMapper.getFoundRows();
-		//System.out.println("dataCount : " + dataCount);
 		paging.buildPagination(dataCount);
+
 		return new DreamPair(listResult, paging);
 	}
-	
+
 	public DreamPair<List<PostVO>, PagingDTO> search(String boardId, String search, int page) {
 		String[] arrSearch = search.split(" ");
 		if (arrSearch.length == 0) {
@@ -56,16 +59,14 @@ public class PostService {
 			paging.buildPagination(0);
 			return new DreamPair(new ArrayList<>(), paging);
 		}
-			
 		PagingDTO paging = new PagingDTO(page);
 		List<PostVO> listResult = postMapper.searchByTfIdf(boardId, arrSearch, paging);
 		long dataCount = postMapper.getFoundRows();
-		//System.out.println("dataCount : " + dataCount);
 		paging.buildPagination(dataCount);
 
 		return new DreamPair(listResult, paging);
 	}
-	
+
 	/** 원글 상세. {첨부파일 목록}, 댓글 목록이 내부 변수에 채워짐 */
 	public PostVO findById(String id) {
 		//postMapper.findById(id)는 id의 primary key 특성으로 사전순서가 보장되어 있음
@@ -96,57 +97,22 @@ public class PostService {
 	 * 모든 tag와 TF 등재 및 tag의 df 수정
 	 */
 	@Transactional
-	public int mngPost(PostVO post, PartyVO user) throws BusinessException {
+	public int mngPost(PostVO post, PartyVO user) {
 		//post.id 있으면 수정, 없으면 신규.
-		if (ObjectUtils.isEmpty(post.getId())){
+		if (ObjectUtils.isEmpty(post.getId())) {
 			post.setWriter(user);
-			int cnt = createPost(post);
+			//해당 게시판의 게시글 건수(post_cnt) 또한 올려줄까? 대쉬보드 용도로?
+			int cnt = postMapper.createPost(post);
+			createTagRelation(post);
 			return cnt;
 		} else {
-			//수정시 post.writer.id == Principal  user.id 이어야 함을 검사
-			//다르면 BusinessException를 발생 시킨다
-			if(!(post.getWriter().getId().equals(user.getId()))) 
+			//수정 시는 post.writer.id == Principal user.id 이어야 함을 검사하여
+			//다르면 BusinessException를 발생 시켜야
+			if (! post.getWriter().getId().equals(user.getId()))
 				throw new BusinessException(ErrorCode.INVAID_UPDATE);
 			int cnt = updatePost(post);
 			return cnt;
 		}
-
-	}
-
-	private int createPost(PostVO post) {
-		//해당 게시판의 게시글 수(post_cnt 또한 올려야 한다)
-		int cnt = postMapper.createPost(post);
-		
-		Map<String, Integer> mapTF = buildTF(post);
-
-		//기존 단어 찾음. 기존 단어의 DF는 이 문서에서 나온 단어 출현 횟수를 올려주어야 함. 
-		List<TagVO> listExistingTags = tagRepository.findByWord(mapTF.keySet());
-		
-		//새 단어 목록 찾기
-		List<String> listExistingWords = listExistingTags.stream().map(tagVo->tagVo.getWord()).collect(Collectors.toList());
-		List<String> listNewWords = new ArrayList<>(mapTF.keySet());
-		listNewWords.removeAll(listExistingWords);
-		List<TagVO> listNewTags = listNewWords.stream().map(newWord->
-			new TagVO(tagRepository.getId("s_tag"), newWord, "")).collect(Collectors.toList());
-		tagRepository.saveAll(listNewTags);
-		
-		//게시물과 단어 사이의 관계 만들기
-		List<TagRelVO> list = listExistingTags.stream().map(tagVo->
-			new TagRelVO(new TagRelId("T_reply", post.getId(), tagVo.getId()), 
-					mapTF.get(tagVo.getWord()))).collect(Collectors.toList());
-		
-		//단어 등록
-		for (TagVO tagVo : listNewTags) {
-			TagRelId id = new TagRelId("T_reply", post.getId(), tagVo.getId());
-			list.add(new TagRelVO(id, mapTF.get(tagVo.getWord())));
-		}
-		/*
-		list.addAll(listNewTags.stream().map(tagVo->
-		new TagRelVO(new TagRelId("T_reply", post.getId(), tagVo.getId()), 
-				mapTF.get(tagVo.getWord()))).collect(Collectors.toList()));
-		*/
-		tagRelRepository.saveAll(list);
-		return cnt;
 	}
 	
 	/** 댓글 달기. parent의 hid의 연결된 hid 만들기 */
@@ -156,7 +122,12 @@ public class PostService {
 	
 	/** tf, df 정보 수정도 고려하여야 함. */
 	public int updatePost(PostVO post) {
-		return postMapper.updatePost(post);
+		//게시물과 단어 사이의 기존 관계 삭제
+		tagRelRepository.deleteAllByPostId(post.getId());
+		
+		int cnt = postMapper.updatePost(post);
+		createTagRelation(post);
+		return cnt;
 	}
 
 	/** */
@@ -188,7 +159,7 @@ public class PostService {
 
 		List<String> listNoun = new ArrayList<>();
 		for (String doc : docs) {
-			if( doc == null)
+			if (doc == null)
 				continue;
 			//대상이되는 문자열속의 명사 추출
 			doc = doc.trim();
@@ -197,7 +168,7 @@ public class PostService {
 		}
 
 		//게시글 수정 처리는 미루어 둘 것임
-		Map<String, Integer> mapWordCnt = new HashMap<>();
+		Map<String, Integer> mapWordCnt = new TreeMap<>();
 		
 		for (String noun : listNoun) {
 			if (mapWordCnt.containsKey(noun)) {
@@ -209,7 +180,33 @@ public class PostService {
 		return mapWordCnt;
 	}
 
+	private void createTagRelation(PostVO post) {
+		Map<String, Integer> mapTF = buildTF(post);
 
-
+		//기존 단어 찾음. 기존 단어의 DF는 이 문서에서 나온 단어 출현 횟수를 올려주어야 함. 
+		List<TagVO> listExistingTags = tagRepository.findByWord(mapTF.keySet());
+		
+		//새 단어 목록 찾기. 성능을 고려한 개발입니다. 따라서 정렬을 도입함
+		SortedSet<String> 기존단어목록 = new TreeSet(listExistingTags.stream().map(tagVo->tagVo.getWord()).collect(Collectors.toList()));
+		List<String> listNewWords = mapTF.keySet().stream().filter(word->! 기존단어목록.contains(word)).collect(Collectors.toList());
+		List<TagVO> listNewTags = listNewWords.stream().map(newWord->
+			new TagVO(tagRepository.getId("s_tag"), newWord, "")).collect(Collectors.toList());
+		tagRepository.saveAll(listNewTags);
+		
+		//게시물과 단어 사이의 관계 만들기
+		List<TagRelVO> list = listExistingTags.stream().map(tagVo->
+			new TagRelVO(new TagRelId("T_reply", post.getId(), tagVo.getId()), 
+					mapTF.get(tagVo.getWord()))).collect(Collectors.toList());
+		for (TagVO tagVo : listNewTags) {
+			TagRelId id = new TagRelId("T_reply", post.getId(), tagVo.getId());
+			list.add(new TagRelVO(id, mapTF.get(tagVo.getWord())));
+		}
+		/*
+		list.addAll(listNewTags.stream().map(tagVo->
+		new TagRelVO(new TagRelId("T_reply", post.getId(), tagVo.getId()), 
+				mapTF.get(tagVo.getWord()))).collect(Collectors.toList()));
+		*/
+		tagRelRepository.saveAll(list);
+	}
 	
 }

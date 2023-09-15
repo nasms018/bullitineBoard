@@ -9,10 +9,10 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Getter
-@Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public abstract class Entity {
 	/** DDL : idfunc.sql 에서의 id 길이에 맞추는 것 */

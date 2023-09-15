@@ -24,7 +24,7 @@ public class BoardController {
 	
 	@GetMapping("/anonymous/listAll")
 	public ResponseEntity<List<BoardVO>> listAll() {
-		//System.out.println("BB/anonymous/listAll");
+		System.out.println("BB//anonymous/listAll");
 		List<BoardVO> list = boardService.listAll();
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}

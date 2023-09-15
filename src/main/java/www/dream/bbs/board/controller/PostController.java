@@ -27,14 +27,13 @@ import www.dream.bbs.board.model.PostVO;
 import www.dream.bbs.board.model.ReplyVO;
 import www.dream.bbs.board.service.PostService;
 import www.dream.bbs.common.exception.BusinessException;
-import www.dream.bbs.framework.model.PagingDTO;
 import www.dream.bbs.framework.model.DreamPair;
+import www.dream.bbs.framework.model.PagingDTO;
 import www.dream.bbs.framework.nlp.pos.service.NounExtractor;
 import www.dream.bbs.party.model.PartyVO;
 
 @RestController		//Container에 담기도록 지정
 @RequestMapping("/post")
-//@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "Requestor-Type", exposedHeaders = "x-auth-token")
 public class PostController {
 	@Autowired
 	private PostService postService;
@@ -43,14 +42,13 @@ public class PostController {
 		this.postService = postService;
 	}
 	
-	// /post/anonymous/listAll/0001/1
+	// /post/anonymous/listAll/000n
 	@GetMapping("/anonymous/listAll/{boardId}/{page}")
 	public ResponseEntity<DreamPair<List<PostVO>, PagingDTO>> listAllPost(@PathVariable String boardId, @PathVariable int page) {
 		DreamPair<List<PostVO>, PagingDTO> result = postService.listAllPost(boardId, page);
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 	
-	// /post/anonymous/search/{boardId}/{search}/{page}
 	@GetMapping("/anonymous/search/{boardId}/{search}/{page}")
 	public ResponseEntity<DreamPair<List<PostVO>, PagingDTO>> search(@PathVariable String boardId, @PathVariable String search, @PathVariable int page) {
 		DreamPair<List<PostVO>, PagingDTO> result = postService.search(boardId, search, page);
@@ -81,8 +79,9 @@ public class PostController {
 
 	/** 게시판에 원글 달기 /post/mngPost */
 	@PostMapping("/mngPost")
-	@PreAuthorize("hasAnyRole('manager','member')")
-	public ResponseEntity<Integer> mngPost(@AuthenticationPrincipal PartyVO user, @RequestBody PostVO post) throws BusinessException {
+	@PreAuthorize("hasAnyRole('member','manager')")
+	public ResponseEntity<Integer> mngPost(@AuthenticationPrincipal PartyVO user,
+			@RequestBody PostVO post) throws BusinessException {
 		return new ResponseEntity<>(postService.mngPost(post, user), HttpStatus.OK);
 	}
 

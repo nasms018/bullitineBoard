@@ -29,7 +29,7 @@ public class PartyMapperTest {
     
     //@Test
     @DisplayName("CreateOrganization Test")
-    @Rollback(false)
+    @Rollback(true)
     public void testCreateOrganization() {
     	try {
     		PasswordEncoder pwdEnc = new BCryptPasswordEncoder();
@@ -73,13 +73,13 @@ public class PartyMapperTest {
     public void testCreateMember() {
     	try {
     		PasswordEncoder pwdEnc = new BCryptPasswordEncoder();
-    		String pwd = pwdEnc.encode("cha");
+    		String pwd = pwdEnc.encode("김길동");
 
     		List<ContactPointVO> listContactPoint = new ArrayList<>();
     		listContactPoint.add(new ContactPointVO("hand phone number", "010-7778-0999"));
     		listContactPoint.add(new ContactPointVO("home address", "서울 영등포 녹번 440길"));
     				
-    		PersonVO lee = new PersonVO("차길동", "cha", pwd, listContactPoint, true);
+    		PersonVO lee = new PersonVO("김길동", "김길동", pwd, listContactPoint, true);
     		int cnt = mapper.createPerson(lee);
     		mapper.createAccountability(new AccountabilityVO("member", "0000", lee.getId()));
     	} catch (Exception e) {

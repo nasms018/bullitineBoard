@@ -13,9 +13,10 @@ import www.dream.bbs.framework.model.PagingDTO;
 public interface PostMapper {
 	//LRCUD 순서로 함수들을 배치하여 빠르게 따라갈(추적성) 수 있도록 합니다.
 	public long getFoundRows();
-	public List<PostVO> listAllPost(@Param("boardId")String boardId, @Param("paging") PagingDTO paging);
-	public List<PostVO> searchByTfIdf(@Param("boardId")String boardId, 
-			@Param("arrSearch")String[] arrSearch, @Param("paging") PagingDTO paging);
+	public List<PostVO> listAllPost(@Param("boardId") String boardId, @Param("paging") PagingDTO paging);
+	public List<PostVO> searchByTfIdf(@Param("boardId") String boardId,
+			@Param("arrSearch") String[] arrSearch, @Param("paging") PagingDTO paging);
+
 	public List<ReplyVO> findById(String id);
 	public void incReadCnt(String id);
 	
@@ -27,5 +28,4 @@ public interface PostMapper {
 	public int updateReply(ReplyVO reply);
 	
 	public int deleteReply(String id);
-
 }

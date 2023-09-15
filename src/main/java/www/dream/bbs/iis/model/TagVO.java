@@ -25,7 +25,6 @@ public class TagVO {
 	private String word;
 	@Column(name="description")
 	private String 단어정의_설명;
-
 	
 	public TagVO() {}
 	
