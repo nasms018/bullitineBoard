@@ -23,7 +23,7 @@ public class ReplyVO extends MasterEntity {
 	private String content;	//내용
 	private int hTier;
 	//대댓 구조 만들기는 어떻게?
-	private List<ReplyVO> listReply;
+	private List<ReplyVO> listReply = new ArrayList<>();
 	
 	public ReplyVO(String id) {
 		super.setId(id);
@@ -36,8 +36,7 @@ public class ReplyVO extends MasterEntity {
 	}
 
 	public void appendReply(ReplyVO reply) {
-		if (listReply == null)
-			listReply = new ArrayList<>();
+
 		listReply.add(reply);
 	}
 }
