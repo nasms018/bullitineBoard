@@ -92,6 +92,17 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-core</artifactId>
+			<version>4.0.3</version>
+		</dependency>
+
+		<dependency>
 			<groupId>com.github.shin285</groupId>
 			<artifactId>KOMORAN</artifactId>
 			<version>3.3.4</version>
@@ -101,6 +112,12 @@
 			<groupId>net.coobird</groupId>
 			<artifactId>thumbnailator</artifactId>
 			<version>0.4.20</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jcodec</groupId>
+			<artifactId>jcodec-javase</artifactId>
+			<version>0.2.5</version>
 		</dependency>
 
 		<dependency>
