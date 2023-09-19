@@ -44,7 +44,6 @@ public enum PlaybleContentTypes {
 			contentType = Files.probeContentType(savedOnServerFile.toPath());
 			playbleContentType = getContentType(contentType);
 			if (playbleContentType != null && playbleContentType.isThumbnailTarget) {
-				
 
 				String pureFileName =  savedOnServerFile.getName().substring(0, savedOnServerFile.getName().indexOf(ext));
 				File thumdFile = new File(savedOnServerFile.getParent(),
@@ -52,7 +51,7 @@ public enum PlaybleContentTypes {
 
 				FileOutputStream thumbnailOutputStream = new FileOutputStream(thumdFile);
 				if (playbleContentType == image) {
-					Thumbnailator.createThumbnail(is, thumbnailOutputStream, "png", 100, 100);
+					Thumbnailator.createThumbnail(is, thumbnailOutputStream, 100, 100);
 				} else if (playbleContentType == video) {
 					Picture picture = FrameGrab.getFrameFromFile(savedOnServerFile, 0);
 					BufferedImage bufferedImage = AWTUtil.toBufferedImage(picture);
