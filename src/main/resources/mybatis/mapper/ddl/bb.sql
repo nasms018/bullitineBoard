@@ -100,8 +100,7 @@ create table T_TGT_TAG(
 	tgt_name	varchar(255),	/* post, party */
 	tgt_id		char(4),
 	tag_id		char(4),
-	tf			int,
-	primary key(tgt_name, tag_id, tgt_id) /* post*/
+	tf			int,	primary key(tgt_name, tag_id, tgt_id) /* post*/
 );
 /* party */
 create index idx_tgt_tag on T_TGT_TAG(tgt_name, tgt_id, tag_id);
@@ -114,4 +113,21 @@ create table T_comp_hierarch(
 	kind			char(3)	/* t2b, b2t */
 );	
 create index idx_comp_hier on T_comp_hierarch(comp_hierarch);
-	
+
+CREATE TABLE t_sequence (
+	NAME VARCHAR(255) PRIMARY KEY,
+	NUM INT NOT NULL DEFAULT 0
+);
+
+create table T_attach(
+	owner_type		varchar(255),
+	owner_id		varchar(255),
+	uuid			char(32) PRIMARY KEY,
+	path		varchar(2000),
+	name			varchar(500),
+	ext				varchar(255),
+	type			varchar(50)
+
+);
+
+create index idx_attach_owner on T_attach(owner_id,uuid);
