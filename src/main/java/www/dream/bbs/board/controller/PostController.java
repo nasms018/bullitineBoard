@@ -87,7 +87,7 @@ public class PostController {
 
 	/** 댓글 달기. parent의 hid의 연결된 hid 만들기 */
 	@PostMapping("/createReply")
-	public ResponseEntity<ReplyVO> createReply(@AuthenticationPrincipal PartyVO user,@RequestBody DreamPair<ReplyVO, ReplyVO> reply) {
+	public ResponseEntity<ReplyVO> createReply(@AuthenticationPrincipal PartyVO user, @RequestBody DreamPair<ReplyVO, ReplyVO> reply) {
 		ReplyVO parent = reply.getFirstVal();
 		ReplyVO newReply = reply.getSecondVal();
 		newReply.setWriter(user);

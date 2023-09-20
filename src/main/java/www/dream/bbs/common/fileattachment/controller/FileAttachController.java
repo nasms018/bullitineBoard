@@ -1,8 +1,10 @@
 package www.dream.bbs.common.fileattachment.controller;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,13 +15,17 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -59,7 +65,6 @@ public class FileAttachController {
 		if (!uploadPath.exists()) {
 			uploadPath.mkdirs(); // 여러 계층의 폴더를 한번에 만들기
 		}
-	
 
 		for (MultipartFile aFile : attachFiles) {
 			String originalFileName = Normalizer.normalize(aFile.getOriginalFilename(), Normalizer.Form.NFC);
@@ -78,21 +83,38 @@ public class FileAttachController {
 			File savedOnServerFile = new File(uploadPath, uuid + originalFilePureName + fileExt);
 			PlaybleContentTypes contentType = null;
 			try {
-				InputStream is = aFile.getInputStream();
 				aFile.transferTo(savedOnServerFile);
+				InputStream inputStream = new FileInputStream(savedOnServerFile);
 				
-				contentType = PlaybleContentTypes.createThumbnail(is, savedOnServerFile, fileExt);
+				contentType = PlaybleContentTypes.createThumbnail(inputStream, savedOnServerFile, fileExt);
 				attachFileDTO.setContentType(contentType);
+				inputStream.close();
 			} catch (IllegalStateException | IOException e) {
 				e.printStackTrace();
 			}
 			listRet.add(attachFileDTO);
 		}
+		
 		return new ResponseEntity<>(listRet, HttpStatus.OK);
 	}
 
 
-
+	// 썸네일 파일을 화면에 조그맣게 표현해 줄때 작동합니다
+	@PostMapping("/displayThumbnail")
+	@ResponseBody
+	public ResponseEntity<byte[]> getFile(AttachFileDTO attachFileDTO) {
+		ResponseEntity<byte[]> result = null;
+		try {
+			File file = attachFileDTO.findThumnailFile();
+			HttpHeaders header = new HttpHeaders();
+			header.add("Content-Type", Files.probeContentType(file.toPath()));
+			result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), header, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
 	private String getFolder() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date date = new Date();

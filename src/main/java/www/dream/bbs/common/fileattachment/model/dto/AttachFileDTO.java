@@ -29,41 +29,24 @@ public class AttachFileDTO {
 	private String uuid;
 	@Expose(serialize = true)
 	private PlaybleContentTypes contentType;
-	@Expose(serialize = true)
-	private String jsonRepresentation;  //반영할때쓰이는 데이터 (react에선 안씀?)
-	
+
 	public AttachFileDTO(String uuid) {
 		this.uuid = uuid;
 	}
 
 	public AttachFileDTO(String path, String originalFilePureName, String fileExt, String uuid) {
-
 		this.uploadPath = path;
 		this.originalFilePureName = originalFilePureName;
 		this.fileExt = fileExt;
 		this.uuid = uuid;
-		
-		
-	}
-
-	public String getJsonRepresentation() throws Exception { 
-		return JsonUtil.getJsonRepresentation(this);
-	}
-
-	public static AttachFileDTO deserialize(String jsonStr) {
-		try {
-			return (AttachFileDTO) JsonUtil.deserialize(jsonStr, AttachFileDTO.class);
-		} catch (Exception e) {
-			return null;
-		}
 	}
 
 	public File findThumnailFile() {
-		return new File(uploadPath + File.separator + buildThumnailFileName(uuid + "_" + originalFilePureName));
+		return new File(uploadPath + File.separator + buildThumnailFileName(uuid + originalFilePureName));
 	}
 	
 	public File findUploadedFile() {
-		return new File(uploadPath + File.separator + uuid + "_" + originalFilePureName);
+		return new File(uploadPath + File.separator + uuid + originalFilePureName);
 	}
 
 	public static String buildThumnailFileName(String uploadFilePureName) {
@@ -78,14 +61,5 @@ public class AttachFileDTO {
 		findUploadedFile().delete();
 		findThumnailFile().delete();
 	}
-
-	public void makeJsonRepresentation() {
-		try {
-			jsonRepresentation = JsonUtil.getJsonRepresentation(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	
 }
