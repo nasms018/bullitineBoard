@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import www.dream.bbs.board.model.PostVO;
 import www.dream.bbs.board.model.ReplyVO;
 import www.dream.bbs.board.service.PostService;
-import www.dream.bbs.common.exception.BusinessException;
+import www.dream.bbs.framework.exception.BusinessException;
 import www.dream.bbs.framework.model.DreamPair;
 import www.dream.bbs.framework.model.PagingDTO;
 import www.dream.bbs.framework.nlp.pos.service.NounExtractor;

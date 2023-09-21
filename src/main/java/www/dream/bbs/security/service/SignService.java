@@ -9,9 +9,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import www.dream.bbs.common.CommonResponse;
-import www.dream.bbs.common.exception.BusinessException;
-import www.dream.bbs.common.exception.ErrorCode;
+import www.dream.bbs.framework.CommonResponse;
+import www.dream.bbs.framework.exception.BusinessException;
+import www.dream.bbs.framework.exception.ErrorCode;
 import www.dream.bbs.party.mapper.PartyMapper;
 import www.dream.bbs.party.model.PartyVO;
 import www.dream.bbs.security.config.JwtTokenProvider;

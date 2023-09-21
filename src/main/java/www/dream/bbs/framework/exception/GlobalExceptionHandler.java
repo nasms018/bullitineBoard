@@ -1,4 +1,4 @@
-package www.dream.bbs.common.exception;
+package www.dream.bbs.framework.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

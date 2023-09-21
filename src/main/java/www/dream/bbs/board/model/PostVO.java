@@ -7,8 +7,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import www.dream.bbs.common.fileattachment.model.MappedTableDef;
-import www.dream.bbs.common.fileattachment.model.dto.AttachFileDTO;
+import www.dream.bbs.fileattachment.model.MappedTableDef;
+import www.dream.bbs.fileattachment.model.dto.AttachFileDTO;
 import www.dream.bbs.framework.property.anno.TargetProperty;
 
 @Getter

@@ -1,4 +1,4 @@
-package www.dream.bbs.common.fileattachment.controller;
+package www.dream.bbs.fileattachment.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,9 +29,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import www.dream.bbs.common.exception.BusinessException;
-import www.dream.bbs.common.fileattachment.model.PlaybleContentTypes;
-import www.dream.bbs.common.fileattachment.model.dto.AttachFileDTO;
+import www.dream.bbs.fileattachment.model.PlaybleContentTypes;
+import www.dream.bbs.fileattachment.model.dto.AttachFileDTO;
+import www.dream.bbs.framework.exception.BusinessException;
 import www.dream.bbs.party.model.PartyVO;
 
 @RestController // Container에 담기도록 지정
@@ -95,7 +95,7 @@ public class FileAttachController {
 
 
 	// 썸네일 파일을 화면에 조그맣게 표현해 줄때 작동합니다
-	@GetMapping("/displayThumbnail")
+	@GetMapping("/anonymous/displayThumbnail")
 	@ResponseBody
 	public ResponseEntity<byte[]> getFile(String attachInfo) {
 		ResponseEntity<byte[]> result = null;

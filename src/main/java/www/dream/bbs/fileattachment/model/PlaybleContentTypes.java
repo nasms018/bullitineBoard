@@ -1,4 +1,4 @@
-package www.dream.bbs.common.fileattachment.model;
+package www.dream.bbs.fileattachment.model;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -17,7 +17,7 @@ import org.jcodec.scale.AWTUtil;
 import org.springframework.web.multipart.MultipartFile;
 
 import net.coobird.thumbnailator.Thumbnailator;
-import www.dream.bbs.common.fileattachment.model.dto.AttachFileDTO;
+import www.dream.bbs.fileattachment.model.dto.AttachFileDTO;
 
 public enum PlaybleContentTypes {
 	image(true), video(true), audio(false), unknown(false);

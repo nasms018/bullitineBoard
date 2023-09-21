@@ -1,8 +1,8 @@
-package www.dream.bbs.common.fileattachment.model;
+package www.dream.bbs.fileattachment.model;
 
 import java.util.List;
 
-import www.dream.bbs.common.fileattachment.model.dto.AttachFileDTO;
+import www.dream.bbs.fileattachment.model.dto.AttachFileDTO;
 
 public interface MappedTableDef {
 	public String getMappedTableName();

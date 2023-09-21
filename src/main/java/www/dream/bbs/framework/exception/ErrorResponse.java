@@ -1,4 +1,4 @@
-package www.dream.bbs.common.exception;
+package www.dream.bbs.framework.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

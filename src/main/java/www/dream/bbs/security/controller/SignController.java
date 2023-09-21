@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import www.dream.bbs.common.exception.BusinessException;
+import www.dream.bbs.framework.exception.BusinessException;
 import www.dream.bbs.security.dto.SignInDTO;
 import www.dream.bbs.security.dto.SignInResultDto;
 import www.dream.bbs.security.service.SignService;

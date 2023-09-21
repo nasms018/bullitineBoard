@@ -1,4 +1,4 @@
-package www.dream.bbs.common.fileattachment.model.dto;
+package www.dream.bbs.fileattachment.model.dto;
 
 import java.io.File;
 
@@ -16,7 +16,7 @@ import com.google.gson.annotations.Expose;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import www.dream.bbs.common.fileattachment.model.PlaybleContentTypes;
+import www.dream.bbs.fileattachment.model.PlaybleContentTypes;
 import www.dream.bbs.framework.util.JsonUtil;
 
 @Entity
@@ -45,14 +45,13 @@ public class AttachFileDTO {
 	@Expose(serialize = true)
 	private String originalFilePureName;
 	
-	
     @Column(name="type_name")
     @Expose(serialize = true)
     private PlaybleContentTypes contentType;
 
-	@Transient
+	@Transient      //쿼리제외할때 사용하는 어노테이션
 	@Expose(serialize = true)
-	private String jsonRepresentation;  //반영할때쓰이는 데이터 (react에선 안씀?)
+	private String jsonRepresentation;  //반영할때쓰이는 데이터
 	
 	public AttachFileDTO(String uuid) {
 		this.uuid = uuid;

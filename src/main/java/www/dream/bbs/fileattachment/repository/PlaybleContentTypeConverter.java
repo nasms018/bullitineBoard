@@ -1,11 +1,11 @@
-package www.dream.bbs.common.fileattachment.repository;
+package www.dream.bbs.fileattachment.repository;
 
 import java.util.stream.Stream;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
-import www.dream.bbs.common.fileattachment.model.PlaybleContentTypes;
+import www.dream.bbs.fileattachment.model.PlaybleContentTypes;
 
 @Converter(autoApply = true)
 public class PlaybleContentTypeConverter implements AttributeConverter<PlaybleContentTypes, String> {

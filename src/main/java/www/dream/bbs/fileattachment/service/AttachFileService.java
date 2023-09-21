@@ -1,13 +1,13 @@
-package www.dream.bbs.common.fileattachment.service;
+package www.dream.bbs.fileattachment.service;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import www.dream.bbs.common.fileattachment.model.MappedTableDef;
-import www.dream.bbs.common.fileattachment.model.dto.AttachFileDTO;
-import www.dream.bbs.common.fileattachment.repository.AttachFileRepository;
+import www.dream.bbs.fileattachment.model.MappedTableDef;
+import www.dream.bbs.fileattachment.model.dto.AttachFileDTO;
+import www.dream.bbs.fileattachment.repository.AttachFileRepository;
 
 @Service
 public class AttachFileService {

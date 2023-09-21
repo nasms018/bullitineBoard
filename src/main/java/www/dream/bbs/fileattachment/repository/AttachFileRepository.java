@@ -1,4 +1,4 @@
-package www.dream.bbs.common.fileattachment.repository;
+package www.dream.bbs.fileattachment.repository;
 
 import java.io.Serializable;
 import java.util.List;
@@ -13,7 +13,7 @@ import org.springframework.data.repository.query.Param;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import www.dream.bbs.common.fileattachment.model.dto.AttachFileDTO;
+import www.dream.bbs.fileattachment.model.dto.AttachFileDTO;
 import www.dream.bbs.iis.model.TagVO;
 
 public interface AttachFileRepository extends JpaRepository<AttachFileDTO, String>{

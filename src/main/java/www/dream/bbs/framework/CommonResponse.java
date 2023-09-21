@@ -1,4 +1,4 @@
-package www.dream.bbs.common;
+package www.dream.bbs.framework;
 
 //예제 13.27
 public enum CommonResponse {
