@@ -20,6 +20,7 @@ import org.springframework.util.ObjectUtils;
 import www.dream.bbs.board.mapper.PostMapper;
 import www.dream.bbs.board.model.PostVO;
 import www.dream.bbs.board.model.ReplyVO;
+import www.dream.bbs.fileattachment.model.dto.AttachFileDTO;
 import www.dream.bbs.fileattachment.service.AttachFileService;
 import www.dream.bbs.framework.exception.BusinessException;
 import www.dream.bbs.framework.exception.ErrorCode;
@@ -30,8 +31,7 @@ import www.dream.bbs.framework.property.PropertyExtractor;
 import www.dream.bbs.iis.model.TagRelId;
 import www.dream.bbs.iis.model.TagRelVO;
 import www.dream.bbs.iis.model.TagVO;
-import www.dream.bbs.iis.repository.TagRelRepository;
-import www.dream.bbs.iis.repository.TagRepository;
+import www.dream.bbs.iis.service.TagService;
 import www.dream.bbs.party.model.PartyVO;
 
 @Service
@@ -39,10 +39,7 @@ public class PostService {
 	@Autowired
 	private PostMapper postMapper;
 	@Autowired
-	private TagRepository tagRepository;
-	@Autowired
-	private TagRelRepository tagRelRepository;
-	
+	private TagService tagService;
 	@Autowired
 	private AttachFileService attachFileService;
 	
@@ -72,6 +69,7 @@ public class PostService {
 	}
 
 	/** 원글 상세. {첨부파일 목록}, 댓글 목록이 내부 변수에 채워짐 */
+	
 	public PostVO findById(String id) {
 		//postMapper.findById(id)는 id의 primary key 특성으로 사전순서가 보장되어 있음
 		List<ReplyVO> oneDimList = postMapper.findById(id);
@@ -82,6 +80,10 @@ public class PostService {
 		PostVO ret = (PostVO) oneDimList.get(0);
 		ret.incReadCnt();
 		postMapper.incReadCnt(ret.getId());
+		
+		//attachFileService
+		List<AttachFileDTO> attachFileList = attachFileService.getAttachFileList(ret);
+		ret.setListAttachFile(attachFileList);
 		
 		Map<String, ReplyVO> map = new HashMap<>();
 		for (ReplyVO reply : oneDimList) {
@@ -131,7 +133,7 @@ public class PostService {
 	/** tf, df 정보 수정도 고려하여야 함. */
 	public int updatePost(PostVO post) {
 		//게시물과 단어 사이의 기존 관계 삭제
-		tagRelRepository.deleteAllByPostId(post.getId());
+		tagService.deleteAllByPostId(post.getId());
 		
 		int cnt = postMapper.updatePost(post);
 		createTagRelation(post);
@@ -193,14 +195,14 @@ public class PostService {
 		Map<String, Integer> mapTF = buildTF(post);
 
 		//기존 단어 찾음. 기존 단어의 DF는 이 문서에서 나온 단어 출현 횟수를 올려주어야 함. 
-		List<TagVO> listExistingTags = tagRepository.findByWord(mapTF.keySet());
+		List<TagVO> listExistingTags = tagService.findByWord(mapTF.keySet());
 		
 		//새 단어 목록 찾기. 성능을 고려한 개발입니다. 따라서 정렬을 도입함
 		SortedSet<String> 기존단어목록 = new TreeSet(listExistingTags.stream().map(tagVo->tagVo.getWord()).collect(Collectors.toList()));
 		List<String> listNewWords = mapTF.keySet().stream().filter(word->! 기존단어목록.contains(word)).collect(Collectors.toList());
 		List<TagVO> listNewTags = listNewWords.stream().map(newWord->
-			new TagVO(tagRepository.getId("s_tag"), newWord, "")).collect(Collectors.toList());
-		tagRepository.saveAll(listNewTags);
+			new TagVO(tagService.getId("s_tag"), newWord, "")).collect(Collectors.toList());
+		tagService.saveAllTagVO(listNewTags);
 		
 		//게시물과 단어 사이의 관계 만들기
 		List<TagRelVO> list = listExistingTags.stream().map(tagVo->
@@ -215,7 +217,7 @@ public class PostService {
 		new TagRelVO(new TagRelId("T_reply", post.getId(), tagVo.getId()), 
 				mapTF.get(tagVo.getWord()))).collect(Collectors.toList()));
 		*/
-		tagRelRepository.saveAll(list);
+		tagService.saveAllTagRelVO(list);
 	}
 	
 }

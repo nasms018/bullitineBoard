@@ -18,6 +18,8 @@ import www.dream.bbs.iis.model.TagVO;
 
 public interface AttachFileRepository extends JpaRepository<AttachFileDTO, String>{
 	/** list up */ 
+	//select * from t_attach where Owner_Type = #{ownerType} and Owner_Id =#{ownerId}
+	List<AttachFileDTO> findByOwnerTypeAndOwnerId(String ownerType, String ownerId);
 	/** create
 	@Query(nativeQuery = true, value="insert into T_attach(owner_type, owner_id, uuid, path, name, type_ordinal)"
 			                      + "values(:obj.ownerType, :obj.ownerId, :obj.uuid, :obj.uploadPath, :obj.originalFilePureName, :obj.typeOrdinal, )")

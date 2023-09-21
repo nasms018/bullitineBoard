@@ -20,7 +20,7 @@ public class CodeController {
 	private CodeService codeService;
 	
 	// /framework/anonymous/listAllContactPoint
-	@GetMapping("/anonymous/listAllContactPoint")
+	@GetMapping("/anonymous/listAllContactPointType")
 	public ResponseEntity<List<CodeVO>> listAll() {
 		List<CodeVO> list = codeService.listAll();
 		return new ResponseEntity<>(list, HttpStatus.OK);
