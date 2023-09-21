@@ -30,8 +30,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import www.dream.bbs.common.exception.BusinessException;
+import www.dream.bbs.common.fileattachment.model.PlaybleContentTypes;
 import www.dream.bbs.common.fileattachment.model.dto.AttachFileDTO;
-import www.dream.bbs.common.fileattachment.service.PlaybleContentTypes;
 import www.dream.bbs.party.model.PartyVO;
 
 @RestController // Container에 담기도록 지정
@@ -71,22 +71,17 @@ public class FileAttachController {
 			// c:\c\b\aa.txt > aa.txt
 			String originalFilePureName = originalFileName.substring(originalFileName.lastIndexOf(File.separator) + 1);
 
-			// aa.txt = > .txt
-			String fileExt = originalFilePureName.substring(originalFilePureName.lastIndexOf('.'));
-			// aa
-			originalFilePureName = originalFilePureName.substring(0, originalFilePureName.lastIndexOf('.'));
-
 			String uuid = UUID.randomUUID().toString().replace("-", "");
 
-			AttachFileDTO attachFileDTO = new AttachFileDTO(uploadPath.getPath(), originalFilePureName, fileExt, uuid);
+			AttachFileDTO attachFileDTO = new AttachFileDTO(uploadPath.getPath(), originalFilePureName, uuid);
 
-			File savedOnServerFile = new File(uploadPath, uuid + originalFilePureName + fileExt);
+			File savedOnServerFile = attachFileDTO.findUploadedFile();
 			PlaybleContentTypes contentType = null;
 			try {
 				aFile.transferTo(savedOnServerFile);
 				InputStream inputStream = new FileInputStream(savedOnServerFile);
 				
-				contentType = PlaybleContentTypes.createThumbnail(inputStream, savedOnServerFile, fileExt);
+				contentType = PlaybleContentTypes.createThumbnail(inputStream, savedOnServerFile, attachFileDTO);
 				attachFileDTO.setContentType(contentType);
 				inputStream.close();
 			} catch (IllegalStateException | IOException e) {

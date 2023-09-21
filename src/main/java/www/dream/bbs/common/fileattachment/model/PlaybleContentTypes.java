@@ -1,4 +1,4 @@
-package www.dream.bbs.common.fileattachment.service;
+package www.dream.bbs.common.fileattachment.model;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -37,17 +37,15 @@ public enum PlaybleContentTypes {
 		return unknown;
 	}
 
-	public static PlaybleContentTypes createThumbnail(InputStream is, File savedOnServerFile, String ext) {
+	public static PlaybleContentTypes createThumbnail(InputStream is, File savedOnServerFile, AttachFileDTO attachFileDTO) {
 		PlaybleContentTypes playbleContentType = null;
 		String contentType;
 		try {
 			contentType = Files.probeContentType(savedOnServerFile.toPath());
 			playbleContentType = getContentType(contentType);
 			if (playbleContentType != null && playbleContentType.isThumbnailTarget) {
-
-				String pureFileName =  savedOnServerFile.getName().substring(0, savedOnServerFile.getName().indexOf(ext));
-				File thumdFile = new File(savedOnServerFile.getParent(),
-						AttachFileDTO.buildThumnailFileName(pureFileName));
+			
+				File thumdFile = attachFileDTO.findThumnailFile();
 
 				FileOutputStream thumbnailOutputStream = new FileOutputStream(thumdFile);
 				if (playbleContentType == image) {

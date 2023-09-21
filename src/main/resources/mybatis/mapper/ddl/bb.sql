@@ -119,15 +119,20 @@ CREATE TABLE t_sequence (
 	NUM INT NOT NULL DEFAULT 0
 );
 
+
 create table T_attach(
 	owner_type		varchar(255),
 	owner_id		varchar(255),
 	uuid			char(32) PRIMARY KEY,
-	path		varchar(2000),
+	path			varchar(2000),
 	name			varchar(500),
-	ext				varchar(255),
-	type			varchar(50)
+	type_name		varchar(100)
 
 );
 
 create index idx_attach_owner on T_attach(owner_id,uuid);
+
+insert into T_attach(owner_type, owner_id, uuid, path, name, type_ordinal);
+
+
+

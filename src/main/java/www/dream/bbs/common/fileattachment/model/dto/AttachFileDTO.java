@@ -2,18 +2,21 @@ package www.dream.bbs.common.fileattachment.model.dto;
 
 import java.io.File;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.PostLoad;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
-
-import org.springframework.data.annotation.Id;
+import javax.persistence.Transient;
 
 import com.google.gson.annotations.Expose;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import www.dream.bbs.common.fileattachment.service.PlaybleContentTypes;
+import www.dream.bbs.common.fileattachment.model.PlaybleContentTypes;
 import www.dream.bbs.framework.util.JsonUtil;
 
 @Entity
@@ -22,27 +25,15 @@ import www.dream.bbs.framework.util.JsonUtil;
 @Getter 
 @Setter
 public class AttachFileDTO {
-	
-	/*
-	owner_type		varchar(255),	/* 테이블 이름 적는 곳 T_party, T_reply 
-	owner_id		varchar(255),	/* 대상테이블의 기본키 
-	uuid			char(4),
-	path		varchar(2000),
-	name			varchar(500),
-	ext				varchar(255),
-	type			varchar(50),
-	primary key(owner_id,uuid)
-	*/
-	
-	
-	
-	
 	public static final String THUMBNAIL_FILE_PREFIX = "thumb_";
 	public static final String THUMBNAIL_FILE_POSTFIX = ".png";
 	
 	@Id
 	@Expose(serialize = true)
 	private String uuid;
+	
+	private String ownerType;
+	private String ownerId;
 	
 	//서버에서 관리된 경로 정보
 	@Column(name="path")
@@ -54,16 +45,12 @@ public class AttachFileDTO {
 	@Expose(serialize = true)
 	private String originalFilePureName;
 	
-	@Column(name="ext")
-	@Expose(serialize = true)
-	private String fileExt;
 	
-	 //@Enumerated(EnumType.ORDINAL)
-	@Column(name="")
-	@Expose(serialize = true)
-	private PlaybleContentTypes contentType;
-	
-	@Column(name="")
+    @Column(name="type_name")
+    @Expose(serialize = true)
+    private PlaybleContentTypes contentType;
+
+	@Transient
 	@Expose(serialize = true)
 	private String jsonRepresentation;  //반영할때쓰이는 데이터 (react에선 안씀?)
 	
@@ -71,10 +58,9 @@ public class AttachFileDTO {
 		this.uuid = uuid;
 	}
 
-	public AttachFileDTO(String path, String originalFilePureName, String fileExt, String uuid) {
+	public AttachFileDTO(String path, String originalFilePureName, String uuid) {
 		this.uploadPath = path;
 		this.originalFilePureName = originalFilePureName;
-		this.fileExt = fileExt;
 		this.uuid = uuid;
 	}
 
@@ -90,19 +76,16 @@ public class AttachFileDTO {
 		}
 	}
 	public File findThumnailFile() {
-		return new File(uploadPath + File.separator + buildThumnailFileName(uuid + originalFilePureName));
+		return new File(uploadPath + File.separator + THUMBNAIL_FILE_PREFIX + uuid + THUMBNAIL_FILE_POSTFIX);
 	}
 	
 	public File findUploadedFile() {
-		return new File(uploadPath + File.separator + uuid + originalFilePureName);
-	}
-
-	public static String buildThumnailFileName(String uploadFilePureName) {
-		return THUMBNAIL_FILE_PREFIX + uploadFilePureName + THUMBNAIL_FILE_POSTFIX;
+		return new File(uploadPath + File.separator + uuid + '_' + originalFilePureName);
 	}
 
 	public void setContentType(PlaybleContentTypes contentType) {
 		this.contentType = contentType;
+
 	}
 
 	public void deleteUploadedFiles() {

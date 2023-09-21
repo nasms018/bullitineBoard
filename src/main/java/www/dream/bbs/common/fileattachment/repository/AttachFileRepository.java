@@ -16,11 +16,18 @@ import lombok.NoArgsConstructor;
 import www.dream.bbs.common.fileattachment.model.dto.AttachFileDTO;
 import www.dream.bbs.iis.model.TagVO;
 
-public interface AttachFileRepository extends JpaRepository<AttachFileDTO, AttachFilelId>{
+public interface AttachFileRepository extends JpaRepository<AttachFileDTO, String>{
 	/** list up */ 
-	/** create */ 
+	/** create
+	@Query(nativeQuery = true, value="insert into T_attach(owner_type, owner_id, uuid, path, name, type_ordinal)"
+			                      + "values(:obj.ownerType, :obj.ownerId, :obj.uuid, :obj.uploadPath, :obj.originalFilePureName, :obj.typeOrdinal, )")
+	int saveAttachFileDTO(@Param("obj") AttachFileDTO obj);
+ 	*/ 
 	/** delete 그림 한개 지우기*/ 
 	/** delete all 게시글 지우기*/ 
+
+}
+/*
 	@Query(value="select NEXT_PK(:idType)", nativeQuery = true)
 	String getId(@Param("idType") String idType);
 	
@@ -40,3 +47,4 @@ class AttachFilelId implements Serializable {
 	private String tgt_id;
 	private String tag_id;
 }
+*/

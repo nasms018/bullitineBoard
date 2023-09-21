@@ -22,6 +22,7 @@ import www.dream.bbs.board.model.PostVO;
 import www.dream.bbs.board.model.ReplyVO;
 import www.dream.bbs.common.exception.BusinessException;
 import www.dream.bbs.common.exception.ErrorCode;
+import www.dream.bbs.common.fileattachment.service.AttachFileService;
 import www.dream.bbs.framework.model.DreamPair;
 import www.dream.bbs.framework.model.PagingDTO;
 import www.dream.bbs.framework.nlp.pos.service.NounExtractor;
@@ -41,6 +42,9 @@ public class PostService {
 	private TagRepository tagRepository;
 	@Autowired
 	private TagRelRepository tagRelRepository;
+	
+	@Autowired
+	private AttachFileService attachFileService;
 	
 	/** 게시판의 모든 원글 목록 조회 */
 	public DreamPair<List<PostVO>, PagingDTO> listAllPost(String boardId, int page) {
@@ -104,6 +108,8 @@ public class PostService {
 			//해당 게시판의 게시글 건수(post_cnt) 또한 올려줄까? 대쉬보드 용도로?
 			int cnt = postMapper.createPost(post);
 			createTagRelation(post);
+			attachFileService.createAttachFiles(post);
+			
 			return cnt;
 		} else {
 			//수정 시는 post.writer.id == Principal user.id 이어야 함을 검사하여
@@ -181,7 +187,8 @@ public class PostService {
 		}
 		return mapWordCnt;
 	}
-
+	
+	@Transactional
 	private void createTagRelation(PostVO post) {
 		Map<String, Integer> mapTF = buildTF(post);
 
