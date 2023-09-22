@@ -132,7 +132,7 @@ create table T_attach(
 
 create index idx_attach_owner on T_attach(owner_id,uuid);
 
-insert into T_attach(owner_type, owner_id, uuid, path, name, type_ordinal);
+
 
 
 

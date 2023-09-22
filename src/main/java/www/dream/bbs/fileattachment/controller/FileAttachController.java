@@ -21,8 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -95,15 +95,13 @@ public class FileAttachController {
 
 
 	// 썸네일 파일을 화면에 조그맣게 표현해 줄때 작동합니다
-	@GetMapping("/anonymous/displayThumbnail")
+	@PostMapping("/anonymous/displayThumbnail")
 	@ResponseBody
-	public ResponseEntity<byte[]> getFile(String attachInfo) {
+	public ResponseEntity<byte[]> getFile(@RequestBody AttachFileDTO afdto) {
 		ResponseEntity<byte[]> result = null;
 
 		try {
-			AttachFileDTO attachFileDTO = AttachFileDTO.deserialize(attachInfo);
-			
-			File file = attachFileDTO.findThumnailFile();
+			File file = afdto.findThumnailFile();
 			HttpHeaders header = new HttpHeaders();
 			header.add("Content-Type", Files.probeContentType(file.toPath()));
 			result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), header, HttpStatus.OK);
