@@ -2,7 +2,7 @@
 -- 08월10일--
 
 insert into T_reply(id, h_tier, descrim, bb_id, writer_id, title, content)
-		values ('p001', 0, 'post', '000n', '0003', 'dog', 'i like');
+		values ('p001', 0, 'post', '0001', '0003', 'dog', 'i like');
 	
 insert into T_reply(id, h_tier, descrim, writer_id, content)
 		values ('p001r000', 1, 'reply', '0003', 'neo');
@@ -15,9 +15,9 @@ insert into T_reply(id, h_tier, descrim, writer_id, content)
 		values ('p001r001', 1, 'reply', '0003', 'new name');
 		
 insert into T_reply(id, h_tier, descrim, bb_id, writer_id, title, content)
-		values ('p002', 0, 'post', '000n', '0003', 'cat', 'i like')	;
+		values ('p002', 0, 'post', '0001', '0003', 'cat', 'i like')	;
 insert into T_reply(id, h_tier, descrim, bb_id, title, content)
-		values ('p003', 0, 'post', '000n', 'empty cat', 'bye bye')	;
+		values ('p003', 0, 'post', '0001', 'empty cat', 'bye bye')	;
 		
 		
 		
@@ -141,6 +141,27 @@ insert into T_reply(id, h_tier, descrim, writer_id, content)
  
  
  -------------------------------------------------------------------
+ 
+ <!-- 	public List<PostVO> searchByTfIdf(@Param("boardId")String boardId, @Param("arrSearch")String[] arrSearch);-->
+	<select id="searchByTfIdf" resultMap="rmPostVO">
+	select r.tgt_id post_id, sum(r.tf) tf
+	from t_tag t, t_tgt_tag  r, T_reply p
+	where t.word in 
+	<foreach collection="arrSearch" item="word" open="(" separator="," close=")"> #{word} </foreach>   //('강아지','사랑')
+	and t.id = r.tag_id
+	AND r.tgt_name = 'T_reply'
+	 AND r.tgt_id = p.id
+	 AND p.bb_id =  #{boardId}               //'000n'
+	 group by r.tgt_id;
+	</select>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  
  
 		   
