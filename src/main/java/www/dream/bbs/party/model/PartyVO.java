@@ -26,6 +26,7 @@ import www.dream.bbs.framework.property.anno.TargetProperty;
 @AllArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class PartyVO extends MasterEntity implements UserDetails {
+	@TargetProperty
 	private String name;
 	@TargetProperty
 	private String nick;

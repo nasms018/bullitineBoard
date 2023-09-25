@@ -17,7 +17,7 @@ import www.dream.bbs.party.model.PartyVO;
 @NoArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class ReplyVO extends MasterEntity {
-	@TargetProperty
+	@TargetProperty //프록시를 통한 접근시 널이 나오는 현상
 	private PartyVO writer;	//게시물 작성자
 	@TargetProperty
 	private String content;	//내용

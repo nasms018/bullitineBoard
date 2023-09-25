@@ -58,6 +58,7 @@ public class SignService {
 						.map(GrantedAuthority::getAuthority)
 						.collect(Collectors.toList()))
 				.userId(user.getId())
+				.userName(user.getName())
 				.userNick(user.getNick())
 				.build();
 

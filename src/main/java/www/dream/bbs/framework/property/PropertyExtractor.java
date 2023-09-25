@@ -29,6 +29,8 @@ public class PropertyExtractor {
 	 * @throws Exception
 	 */
 	private static void extractProperty(Object obj, List<String> ret) throws Exception {
+		if(obj==null) 
+			return;
 		List<Field> fields =  collectAllField(obj.getClass());
 		for (Field field : fields) {
 			TargetProperty dis = field.getAnnotation(TargetProperty.class);
