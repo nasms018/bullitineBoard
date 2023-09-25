@@ -27,7 +27,7 @@ public interface AttachFileRepository extends JpaRepository<AttachFileDTO, Strin
  	*/ 
 	/** delete 그림 한개 지우기*/ 
 	/** delete all 게시글 지우기*/ 
-	List<AttachFileDTO>  deleteAllByOwnerTypeAndOwnerId(String ownerType, String ownerId);
+	int deleteAllByOwnerTypeAndOwnerId(String ownerType, String ownerId);
 
 }
 /*

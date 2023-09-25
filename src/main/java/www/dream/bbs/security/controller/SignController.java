@@ -23,7 +23,7 @@ import www.dream.bbs.security.service.SignService;
 
 // 예제 13.28
 @RestController
-@RequestMapping("/sign-api")
+@RequestMapping("/anonymous")
 public class SignController {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(SignController.class);
@@ -34,11 +34,6 @@ public class SignController {
 		this.signService = signService;
 	}
 
-	@GetMapping("/anonymous/hi")
-	public String sayHi() {
-		return "helllllo";
-	}
-	
 	@PostMapping(value = "/sign-in")
 	public SignInResultDto signIn(@RequestBody SignInDTO signInDTO) throws BusinessException {
 		LOGGER.info("[signIn] 로그인을 시도하고 있습니다. id : {}, pw : ****", signInDTO.getId());
