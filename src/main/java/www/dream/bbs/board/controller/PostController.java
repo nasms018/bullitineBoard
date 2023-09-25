@@ -80,9 +80,9 @@ public class PostController {
 	/** 게시판에 원글 달기 /post/mngPost */
 	@PostMapping("/mngPost")
 	@PreAuthorize("hasAnyRole('member','manager')")
-	public ResponseEntity<Integer> mngPost(
+	public ResponseEntity<Integer> mngPost(@AuthenticationPrincipal PartyVO user,
 			@RequestBody PostVO post) throws BusinessException {
-		return new ResponseEntity<>(postService.mngPost(post), HttpStatus.OK);
+		return new ResponseEntity<>(postService.mngPost(post, user), HttpStatus.OK);
 	}
 
 	/** 댓글 달기. parent의 hid의 연결된 hid 만들기 */
