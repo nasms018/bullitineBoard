@@ -70,6 +70,64 @@
 	 limit #{paging.limit} offset #{paging.offset}
 	</select>
 
+	<!-- public List<PostVO> searchByTfIdf(@Param("boardId") String boardId, @Param("arrSearch") String[] arrSearch); 
+	<select id="searchByTfIdf" resultMap="rmPostVO">
+	select p.*, w.id w_id, w.descrim w_descrim, w.name w_name, w.sex w_sex, w.reg_dt w_reg_dt, w.upt_dt w_upt_dt
+	  from (select p.id pid, sum(r.tf) * log(b.post_cnt / (count(p.id) + 1)) importance
+		  from t_tag t, t_tgt_tag r, T_reply p, t_bulitine_board b
+	 WHERE t.word IN 
+			<foreach item="word" collection="arrSearch" open="(" separator="," close=")">
+				#{word}
+			</foreach>
+		   and t.id = r.tag_id
+		   and r.tgt_name = 'T_reply'
+		   and r.tgt_id = p.id
+		   and p.bb_id = b.id
+		   and b.id = #{boardId}
+	  group by p.id) pst,
+	  T_reply p LEFT OUTER JOIN T_party w
+	       ON p.writer_id = w.id
+	 where pst.pid = p.id
+	 order by pst.importance desc
+	</select -->
+
+	<!-- select id="searchByTfIdf" resultMap="rmPostVO">
+	                    역문서_빈도, 전체_문서의_수 해당_단어를_포함한_문서의_수
+	select p.id, sum(r.tf) * log(b.post_cnt / (count(p.id) + 1))
+	  from t_tag t, t_tgt_tag r, T_reply p, t_bulitine_board b
+	 WHERE t.word IN ('사랑', '강아지')
+	   and t.id = r.tag_id
+	   and r.tgt_name = 'T_reply'
+	   and r.tgt_id = p.id
+	   and p.bb_id = b.id
+	   and b.id = '000n'
+  group by p.id
+	</select -->
+
+	<!-- select id="searchByTfIdf" resultMap="rmPostVO">
+	select r.tgt_id post_id, sum(r.tf) tf
+	  from t_tag t, t_tgt_tag r, T_reply p
+	 WHERE t.word IN ('사랑', '강아지')
+		AND t.id = r.tag_id
+		AND r.tgt_name = 'T_reply'
+		AND r.tgt_id = p.id
+		AND p.bb_id = '000n'
+	group by r.tgt_id	
+	</select -->
+	<!-- select id="searchByTfIdf" resultMap="rmPostVO">
+	select p.*, w.id w_id, w.descrim w_descrim, w.name w_name, w.sex w_sex, w.reg_dt w_reg_dt, w.upt_dt w_upt_dt
+	  from t_tag t, t_tgt_tag r,
+	   	 T_reply p LEFT OUTER JOIN T_party w
+	       ON p.writer_id = w.id
+	 WHERE t.word IN 
+			<foreach item="word" collection="arrSearch" open="(" separator="," close=")">
+				#{word}
+			</foreach>
+		AND t.id = r.tag_id
+		AND r.tgt_name = 'T_reply'
+		AND r.tgt_id = p.id
+		AND p.bb_id = #{boardId}	
+	</select-->
 
 	<!-- 	public List<ReplyVO> findById(String id); -->
 	<select id="findById" resultMap="rmReplyVO">
@@ -100,11 +158,10 @@
 	<!-- public int createReply(@Param("parent") ReplyVO parent, @Param("reply") ReplyVO reply);-->
 	<insert id="createReply">
 		<selectKey keyProperty="reply.id" resultType="String" order="BEFORE">
-    		select CONCAT(#{parent.id}, NEXT_PK('s_reply'))
+    		select CONCAT(#{parent.id}, NEXT_PK('s_reply'))  
   		</selectKey>
 		INSERT INTO T_reply(id, h_tier, descrim, writer_id, content)
 		VALUES (#{reply.id}, #{parent.hTier} + 1, 'reply', #{reply.writer.id}, #{reply.content});
-		
 	</insert>
 	
 	<!-- public int updatePost(PostVO post);-->

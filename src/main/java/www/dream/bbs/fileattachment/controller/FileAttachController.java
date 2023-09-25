@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,26 +35,23 @@ import www.dream.bbs.fileattachment.model.dto.AttachFileDTO;
 import www.dream.bbs.framework.exception.BusinessException;
 import www.dream.bbs.party.model.PartyVO;
 
-@RestController // Container에 담기도록 지정
+@RestController		//Container에 담기도록 지정
 @RequestMapping("/")
 @PropertySource("classpath:application.properties")
 public class FileAttachController {
-	@Value("${upload.file.dir}") // SpEL
-	private String uploadDir = "C:-upload";
-	// private String uploadDir = uploadDirBefore.replace("-", File.separator);
-
-	@Autowired
-	public void setValues(@Value("#{'${upload.file.dir}'}") String value) {
-		if (!ObjectUtils.isEmpty(value)) {
+	private String uploadDir = "c:-upload";
+	
+	@Autowired	// SpEL
+    public void setValues(@Value("#{'${upload.file.dir}'}") String value) {
+		if (! ObjectUtils.isEmpty(value)) {
 			this.uploadDir = value;
 		}
-		uploadDir = uploadDir.replace("-", File.separator);
-	}
-
-	// standard getter
+		uploadDir = uploadDir.replace("-", File.separator);	//  2023\09\19 이식성
+    }
 
 	/**
-	 * 게시글 등록 이전에 미리 첨부파일 전송 목적은? 무거운 것 미리 올려두자
+	 * 게시글 등록 이전에 미리 첨부파일 전송의 목적은?
+	 * 무거운 것 미리 올려두자
 	 */
 	@PostMapping("/upload_multi")
 	public ResponseEntity<List<AttachFileDTO>> uploadAttachedMultiFiles(@AuthenticationPrincipal PartyVO user,
@@ -61,16 +59,14 @@ public class FileAttachController {
 		List<AttachFileDTO> listRet = new ArrayList<>();
 
 		File uploadPath = new File(uploadDir, getFolder());
-
-		if (!uploadPath.exists()) {
-			uploadPath.mkdirs(); // 여러 계층의 폴더를 한번에 만들기
+		if (! uploadPath.exists()) {
+			uploadPath.mkdirs();	//여러 계층의 Folder를 한번에 만들기
 		}
 
 		for (MultipartFile aFile : attachFiles) {
-			String originalFileName = Normalizer.normalize(aFile.getOriginalFilename(), Normalizer.Form.NFC);
-			// c:\c\b\aa.txt > aa.txt
-			String originalFilePureName = originalFileName.substring(originalFileName.lastIndexOf(File.separator) + 1);
-
+			String originalFilename = Normalizer.normalize(aFile.getOriginalFilename(), Normalizer.Form.NFC);
+			// a:\c\b\aa.txt  => aa.txt
+			String originalFilePureName = originalFilename.substring(originalFilename.lastIndexOf(File.separator) + 1);
 			String uuid = UUID.randomUUID().toString().replace("-", "");
 
 			AttachFileDTO attachFileDTO = new AttachFileDTO(uploadPath.getPath(), originalFilePureName, uuid);
@@ -80,7 +76,6 @@ public class FileAttachController {
 			try {
 				aFile.transferTo(savedOnServerFile);
 				InputStream inputStream = new FileInputStream(savedOnServerFile);
-				
 				contentType = PlaybleContentTypes.createThumbnail(inputStream, savedOnServerFile, attachFileDTO);
 				attachFileDTO.setContentType(contentType);
 				inputStream.close();
@@ -89,17 +84,15 @@ public class FileAttachController {
 			}
 			listRet.add(attachFileDTO);
 		}
-		
+
 		return new ResponseEntity<>(listRet, HttpStatus.OK);
 	}
 
-
-	// 썸네일 파일을 화면에 조그맣게 표현해 줄때 작동합니다
+	/** 썸네일 파일을 화면에 조그맣게 표현해 줄때 작동합니다 */
 	@PostMapping("/anonymous/displayThumbnail")
 	@ResponseBody
 	public ResponseEntity<byte[]> getFile(@RequestBody AttachFileDTO afdto) {
 		ResponseEntity<byte[]> result = null;
-
 		try {
 			File file = afdto.findThumnailFile();
 			HttpHeaders header = new HttpHeaders();
@@ -110,12 +103,12 @@ public class FileAttachController {
 		}
 		return result;
 	}
-	
+
 	private String getFolder() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date date = new Date();
-		String str = sdf.format(date);
-		return str.replace("-", File.separator); // 2023\09\19 이식성
+		String str = sdf.format(date);	//2023-09-19
+		return str.replace("-", File.separator);	//  2023\09\19 이식성 
 	}
 
 }

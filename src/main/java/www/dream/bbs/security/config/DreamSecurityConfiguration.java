@@ -39,9 +39,8 @@ public class DreamSecurityConfiguration {
 				.cors().configurationSource(corsConfigurationSource())
 				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and().authorizeHttpRequests()
-				//.requestMatchers("/anonymous/sign-in").permitAll() // 가입 및 로그인 주소는 허용
-				.requestMatchers("/anonymous/**").permitAll() 
-				.requestMatchers("/*/anonymous/**").permitAll() 
+				.antMatchers("/sign-api/sign-in").permitAll() // 가입 및 로그인 주소는 허용
+				.antMatchers("/**/anonymous/**").permitAll() 
 				//.anyRequest().denyAll()
 				.and().addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), RequestCacheAwareFilter.class) // JWT 인증
 				.exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint()).and()
@@ -53,7 +52,7 @@ public class DreamSecurityConfiguration {
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(List.of("http://localhost:3000"));
-		configuration.setAllowedMethods(List.of("HEAD", "GET", "POST", "PUT", "OPTIONS"));
+		configuration.setAllowedMethods(List.of("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 		configuration.setAllowedHeaders(List.of("Content-Type", "x-auth-token", "Access-Control-Allow-Origin", "Cache-control", "X-PINGOTHER"));
 		configuration.setAllowCredentials(true);
 

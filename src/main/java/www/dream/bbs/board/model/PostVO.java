@@ -15,11 +15,11 @@ import www.dream.bbs.framework.property.anno.TargetProperty;
 @Setter
 @NoArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class PostVO extends ReplyVO implements MappedTableDef{
+public class PostVO extends ReplyVO implements MappedTableDef {
 	public String getMappedTableName() {
 		return "T_reply";
 	}
-	
+
 	/* 아래 속성은 게시글 일때만 활용되는 */
 	private BoardVO boardVO;
 	@TargetProperty
@@ -30,9 +30,9 @@ public class PostVO extends ReplyVO implements MappedTableDef{
 
 	/** DTO로 활용되는 속성 추가적 정의부분. */
 	private List<String> listTag;
-
-	private List<AttachFileDTO> listAttachFile;
 	
+	private List<AttachFileDTO> listAttachFile;
+
 	public void incReadCnt() {
 		readCnt++;
 	}

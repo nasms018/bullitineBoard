@@ -20,6 +20,7 @@ import org.springframework.util.ObjectUtils;
 import www.dream.bbs.board.mapper.PostMapper;
 import www.dream.bbs.board.model.PostVO;
 import www.dream.bbs.board.model.ReplyVO;
+import www.dream.bbs.fileattachment.model.MappedTableDef;
 import www.dream.bbs.fileattachment.model.dto.AttachFileDTO;
 import www.dream.bbs.fileattachment.service.AttachFileService;
 import www.dream.bbs.framework.exception.BusinessException;
@@ -69,7 +70,6 @@ public class PostService {
 	}
 
 	/** 원글 상세. {첨부파일 목록}, 댓글 목록이 내부 변수에 채워짐 */
-	
 	public PostVO findById(String id) {
 		//postMapper.findById(id)는 id의 primary key 특성으로 사전순서가 보장되어 있음
 		List<ReplyVO> oneDimList = postMapper.findById(id);
@@ -80,7 +80,7 @@ public class PostService {
 		PostVO ret = (PostVO) oneDimList.get(0);
 		ret.incReadCnt();
 		postMapper.incReadCnt(ret.getId());
-		
+
 		//attachFileService
 		List<AttachFileDTO> attachFileList = attachFileService.getAttachFileList(ret);
 		ret.setListAttachFile(attachFileList);
@@ -90,6 +90,7 @@ public class PostService {
 			map.put(reply.getId(), reply);
 			
 			ReplyVO parent = map.get(reply.getParentId());
+			//원글이면 null이 됨
 			if (parent != null) {
 				parent.appendReply(reply);
 			}
@@ -106,7 +107,6 @@ public class PostService {
 	public int mngPost(PostVO post) {
 		//post.id 있으면 수정, 없으면 신규.
 		if (ObjectUtils.isEmpty(post.getId())) {
-
 			//해당 게시판의 게시글 건수(post_cnt) 또한 올려줄까? 대쉬보드 용도로?
 			int cnt = postMapper.createPost(post);
 			createTagRelation(post);
@@ -130,8 +130,6 @@ public class PostService {
 		reply.setCurDate();
 		return reply;
 	}
-	
-
 
 	/** */
 	public int updateReply(ReplyVO reply) {
@@ -182,7 +180,7 @@ public class PostService {
 		}
 		return mapWordCnt;
 	}
-	
+
 	@Transactional
 	private void createTagRelation(PostVO post) {
 		Map<String, Integer> mapTF = buildTF(post);
@@ -205,6 +203,8 @@ public class PostService {
 			TagRelId id = new TagRelId("T_reply", post.getId(), tagVo.getId());
 			list.add(new TagRelVO(id, mapTF.get(tagVo.getWord())));
 		}
+		
+		
 		/*
 		list.addAll(listNewTags.stream().map(tagVo->
 		new TagRelVO(new TagRelId("T_reply", post.getId(), tagVo.getId()), 

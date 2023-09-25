@@ -23,7 +23,7 @@ public abstract class MasterEntity extends Entity {
 	}
 
 	public void setCurDate() {
-		if(regDt == null) 
+		if (regDt == null)
 			regDt = new Date();
 	}
 	

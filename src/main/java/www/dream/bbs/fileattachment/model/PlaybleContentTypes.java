@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -14,7 +13,6 @@ import javax.imageio.ImageIO;
 import org.jcodec.api.FrameGrab;
 import org.jcodec.common.model.Picture;
 import org.jcodec.scale.AWTUtil;
-import org.springframework.web.multipart.MultipartFile;
 
 import net.coobird.thumbnailator.Thumbnailator;
 import www.dream.bbs.fileattachment.model.dto.AttachFileDTO;
@@ -44,7 +42,6 @@ public enum PlaybleContentTypes {
 			contentType = Files.probeContentType(savedOnServerFile.toPath());
 			playbleContentType = getContentType(contentType);
 			if (playbleContentType != null && playbleContentType.isThumbnailTarget) {
-			
 				File thumdFile = attachFileDTO.findThumnailFile();
 
 				FileOutputStream thumbnailOutputStream = new FileOutputStream(thumdFile);

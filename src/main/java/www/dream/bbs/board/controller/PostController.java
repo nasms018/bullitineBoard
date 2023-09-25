@@ -101,7 +101,7 @@ public class PostController {
 	}
 
 	/** hid like로 지우기 */
-	//  /post/delete/{id}
+	//@RequestMapping("/post/{id}")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Integer> deleteReply(@PathVariable String id) {
 		return new ResponseEntity<>(postService.deleteReply(id), HttpStatus.OK);
