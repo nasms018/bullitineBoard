@@ -103,22 +103,23 @@ public class PostService {
 	 * 모든 tag와 TF 등재 및 tag의 df 수정
 	 */
 	@Transactional
-	public int mngPost(PostVO post, PartyVO user) {
+	public int mngPost(PostVO post) {
 		//post.id 있으면 수정, 없으면 신규.
 		if (ObjectUtils.isEmpty(post.getId())) {
-			post.setWriter(user);
+
 			//해당 게시판의 게시글 건수(post_cnt) 또한 올려줄까? 대쉬보드 용도로?
 			int cnt = postMapper.createPost(post);
 			createTagRelation(post);
 			attachFileService.createAttachFiles(post);
-			
 			return cnt;
 		} else {
-			//수정 시는 post.writer.id == Principal user.id 이어야 함을 검사하여
-			//다르면 BusinessException를 발생 시켜야
-			if (! post.getWriter().getId().equals(user.getId()))
-				throw new BusinessException(ErrorCode.INVAID_UPDATE);
-			int cnt = updatePost(post);
+			//게시물과 단어 사이의 기존 관계 삭제
+			tagService.deleteAllByPostId(post.getId());
+			attachFileService.deleteAttachFiles(post);
+			
+			int cnt = postMapper.updatePost(post);
+			createTagRelation(post);
+			attachFileService.createAttachFiles(post);
 			return cnt;
 		}
 	}
@@ -130,15 +131,7 @@ public class PostService {
 		return reply;
 	}
 	
-	/** tf, df 정보 수정도 고려하여야 함. */
-	public int updatePost(PostVO post) {
-		//게시물과 단어 사이의 기존 관계 삭제
-		tagService.deleteAllByPostId(post.getId());
-		
-		int cnt = postMapper.updatePost(post);
-		createTagRelation(post);
-		return cnt;
-	}
+
 
 	/** */
 	public int updateReply(ReplyVO reply) {

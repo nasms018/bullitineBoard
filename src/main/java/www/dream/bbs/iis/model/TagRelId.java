@@ -2,8 +2,7 @@ package www.dream.bbs.iis.model;
 
 import java.io.Serializable;
 
-import javax.persistence.Embeddable;
-
+import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

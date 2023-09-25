@@ -82,7 +82,7 @@ public class PostController {
 	@PreAuthorize("hasAnyRole('member','manager')")
 	public ResponseEntity<Integer> mngPost(@AuthenticationPrincipal PartyVO user,
 			@RequestBody PostVO post) throws BusinessException {
-		return new ResponseEntity<>(postService.mngPost(post, user), HttpStatus.OK);
+		return new ResponseEntity<>(postService.mngPost(post), HttpStatus.OK);
 	}
 
 	/** 댓글 달기. parent의 hid의 연결된 hid 만들기 */
@@ -101,7 +101,8 @@ public class PostController {
 	}
 
 	/** hid like로 지우기 */
-	@DeleteMapping("/delete/{id}")
+	//  /post/delete/{id}
+	@DeleteMapping("/{id}")
 	public ResponseEntity<Integer> deleteReply(@PathVariable String id) {
 		return new ResponseEntity<>(postService.deleteReply(id), HttpStatus.OK);
 	}

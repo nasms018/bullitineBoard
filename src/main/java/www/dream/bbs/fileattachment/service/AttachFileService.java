@@ -24,7 +24,6 @@ public class AttachFileService {
 	
 	public void createAttachFiles(MappedTableDef owner) {
 
-		
 		List<AttachFileDTO> list = owner.getListAttachFile();
 		list.forEach(e->{e.setOwnerType(owner.getMappedTableName());
 			e.setOwnerId(owner.getId());
@@ -37,6 +36,12 @@ public class AttachFileService {
 		list.forEach(e->attachFileRepository.save(e));
 		*/
 		attachFileRepository.saveAll(list);
+	}
+
+	public void deleteAttachFiles(MappedTableDef owner) {
+		attachFileRepository.deleteAllByOwnerTypeAndOwnerId(owner.getMappedTableName(), owner.getId());
+
+		
 	}
 
 }
