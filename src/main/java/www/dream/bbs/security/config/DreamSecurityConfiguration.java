@@ -31,7 +31,7 @@ public class DreamSecurityConfiguration {
 		return new BCryptPasswordEncoder();
 	}
 
-	@Bean
+	@Bean 
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		// 인증 문제
 		http.httpBasic().disable() // base64로 인코딩하여 전달하는 구조
@@ -39,7 +39,7 @@ public class DreamSecurityConfiguration {
 				.cors().configurationSource(corsConfigurationSource())
 				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and().authorizeHttpRequests()
-				.antMatchers("/sign-api/sign-in").permitAll() // 가입 및 로그인 주소는 허용
+				.antMatchers("/anonymous/sign-in").permitAll() // 가입 및 로그인 주소는 허용
 				.antMatchers("/**/anonymous/**").permitAll() 
 				//.anyRequest().denyAll()
 				.and().addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), RequestCacheAwareFilter.class) // JWT 인증

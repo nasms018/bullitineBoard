@@ -23,7 +23,7 @@ import www.dream.bbs.security.service.SignService;
 
 // 예제 13.28
 @RestController
-@RequestMapping("/sign-api")
+@RequestMapping("/anonymous")
 public class SignController {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(SignController.class);
@@ -32,11 +32,6 @@ public class SignController {
 	@Autowired
 	public SignController(SignService signService) {
 		this.signService = signService;
-	}
-
-	@GetMapping("/anonymous/hi")
-	public String sayHi() {
-		return "helllllo";
 	}
 	
 	@PostMapping(value = "/sign-in")
