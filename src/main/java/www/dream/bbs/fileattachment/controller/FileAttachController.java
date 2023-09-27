@@ -13,15 +13,12 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import www.dream.bbs.fileattachment.model.PlaybleContentTypes;
 import www.dream.bbs.fileattachment.model.dto.AttachFileDTO;
+import www.dream.bbs.fileattachment.service.AttachFileCleaner;
 import www.dream.bbs.framework.exception.BusinessException;
 import www.dream.bbs.party.model.PartyVO;
 
@@ -39,16 +37,8 @@ import www.dream.bbs.party.model.PartyVO;
 @RequestMapping("/")
 @PropertySource("classpath:application.properties")
 public class FileAttachController {
-	private String uploadDir = "c:-upload";
-	
-	@Autowired	// SpEL
-    public void setValues(@Value("#{'${upload.file.dir}'}") String value) {
-		if (! ObjectUtils.isEmpty(value)) {
-			this.uploadDir = value;
-		}
-		uploadDir = uploadDir.replace("-", File.separator);	//  2023\09\19 이식성
-    }
-
+	@Autowired
+	private AttachFileCleaner attachFileCleaner;
 	/**
 	 * 게시글 등록 이전에 미리 첨부파일 전송의 목적은?
 	 * 무거운 것 미리 올려두자
@@ -57,8 +47,9 @@ public class FileAttachController {
 	public ResponseEntity<List<AttachFileDTO>> uploadAttachedMultiFiles(@AuthenticationPrincipal PartyVO user,
 			@RequestParam MultipartFile[] attachFiles) throws BusinessException {
 		List<AttachFileDTO> listRet = new ArrayList<>();
-
-		File uploadPath = new File(uploadDir, getFolder());
+		String pathName = getFolder();
+		String sudPath = pathName.replace(AttachFileCleaner.DATE_STRING_DELIMETER, File.separatorChar);
+		File uploadPath = new File(attachFileCleaner.getUploadDir(), pathName);
 		if (! uploadPath.exists()) {
 			uploadPath.mkdirs();	//여러 계층의 Folder를 한번에 만들기
 		}
@@ -69,14 +60,14 @@ public class FileAttachController {
 			String originalFilePureName = originalFilename.substring(originalFilename.lastIndexOf(File.separator) + 1);
 			String uuid = UUID.randomUUID().toString().replace("-", "");
 
-			AttachFileDTO attachFileDTO = new AttachFileDTO(uploadPath.getPath(), originalFilePureName, uuid);
+			AttachFileDTO attachFileDTO = new AttachFileDTO(pathName, originalFilePureName, uuid);
 
-			File savedOnServerFile = attachFileDTO.findUploadedFile();
+			File savedOnServerFile = attachFileDTO.findUploadedFile(attachFileCleaner.getUploadDir());
 			PlaybleContentTypes contentType = null;
 			try {
 				aFile.transferTo(savedOnServerFile);
 				InputStream inputStream = new FileInputStream(savedOnServerFile);
-				contentType = PlaybleContentTypes.createThumbnail(inputStream, savedOnServerFile, attachFileDTO);
+				contentType = PlaybleContentTypes.createThumbnail(inputStream, savedOnServerFile, attachFileCleaner.getUploadDir(), attachFileDTO);
 				attachFileDTO.setContentType(contentType);
 				inputStream.close();
 			} catch (IllegalStateException | IOException e) {
@@ -94,7 +85,7 @@ public class FileAttachController {
 	public ResponseEntity<byte[]> getFile(@RequestBody AttachFileDTO afdto) {
 		ResponseEntity<byte[]> result = null;
 		try {
-			File file = afdto.findThumnailFile();
+			File file = afdto.findThumnailFile(attachFileCleaner.getUploadDir());
 			HttpHeaders header = new HttpHeaders();
 			header.add("Content-Type", Files.probeContentType(file.toPath()));
 			result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), header, HttpStatus.OK);
@@ -103,12 +94,28 @@ public class FileAttachController {
 		}
 		return result;
 	}
-
+	
+	@PostMapping("/anonymous/getOriginalFile")
+	@ResponseBody
+	public ResponseEntity<byte[]> getOriginalFile(@RequestBody AttachFileDTO afdto) {
+		ResponseEntity<byte[]> result = null;
+		try {
+			File file = afdto.findUploadedFile(attachFileCleaner.getUploadDir());
+			HttpHeaders header = new HttpHeaders();
+			header.add("Content-Type", Files.probeContentType(file.toPath()));
+			result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), header, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
 	private String getFolder() {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
 		Date date = new Date();
-		String str = sdf.format(date);	//2023-09-19
-		return str.replace("-", File.separator);	//  2023\09\19 이식성 
+
+		return attachFileCleaner.SDF.format(date); //2023:09:23
+	
 	}
 
 }

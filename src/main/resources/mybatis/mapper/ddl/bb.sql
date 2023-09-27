@@ -118,10 +118,10 @@ create index idx_comp_hier on T_comp_hierarch(comp_hierarch);
 insert into t_attach(owner_type, owner_id, uuid, path, name, type_name)
 values();
 create table t_attach(
-	owner_type	varchar(255),	/* 테이블 이름 적는 곳 T_party, T_reply */
+	owner_type	varchar(255),	
 	owner_id	varchar(255),
 	uuid        char(32),
-	path		varchar(2000),
+	path		char(10),
 	name		varchar(500),
 	type_name   varchar(100),
 	primary key(uuid)

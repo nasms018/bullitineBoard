@@ -35,14 +35,14 @@ public enum PlaybleContentTypes {
 		return unknown;
 	}
 
-	public static PlaybleContentTypes createThumbnail(InputStream is, File savedOnServerFile, AttachFileDTO attachFileDTO) {
+	public static PlaybleContentTypes createThumbnail(InputStream is, File savedOnServerFile, String uploadDir, AttachFileDTO attachFileDTO) {
 		PlaybleContentTypes playbleContentType = null;
 		String contentType;
 		try {
 			contentType = Files.probeContentType(savedOnServerFile.toPath());
 			playbleContentType = getContentType(contentType);
 			if (playbleContentType != null && playbleContentType.isThumbnailTarget) {
-				File thumdFile = attachFileDTO.findThumnailFile();
+				File thumdFile = attachFileDTO.findThumnailFile(uploadDir);
 
 				FileOutputStream thumbnailOutputStream = new FileOutputStream(thumdFile);
 				if (playbleContentType == image) {

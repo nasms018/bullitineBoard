@@ -1,9 +1,5 @@
 package www.dream.bbs.framework.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 /**
  * Type이 달라도 정보 쌍을 담을 수 있는 그릇
  * @param <F>
@@ -25,4 +21,10 @@ public class DreamPair<F, S> {
 	public S getSecondVal() {
 		return secondVal;
 	}
+
+	@Override
+	public String toString() {
+		return "DreamPair [firstVal=" + firstVal + ", secondVal=" + secondVal + "]";
+	}
+	
 }

@@ -17,6 +17,7 @@ public interface AttachFileRepository extends JpaRepository<AttachFileDTO, Strin
 	 * */
 	List<AttachFileDTO> findByOwnerTypeAndOwnerId(String ownerType, String ownerId);
 	
+	List<AttachFileDTO> findByPathNameIn(List<String> listDay);
 	/** create 
 	@Query(nativeQuery = true,
 			value="insert into t_attach(owner_type, owner_id, uuid, path, name, type_ordinal) "
