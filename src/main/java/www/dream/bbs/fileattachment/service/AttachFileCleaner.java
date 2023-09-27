@@ -1,10 +1,15 @@
 package www.dream.bbs.fileattachment.service;
 
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +20,6 @@ import org.springframework.util.ObjectUtils;
 
 import www.dream.bbs.fileattachment.model.dto.AttachFileDTO;
 import www.dream.bbs.fileattachment.repository.AttachFileRepository;
-import www.dream.bbs.framework.model.DreamPair;
 
 @Service
 @PropertySource("classpath:application.properties")
@@ -24,6 +28,7 @@ public class AttachFileCleaner {
 	private String uploadDir = "c:-upload";
 	public static final char DATE_STRING_DELIMETER = ':';
 	public static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy:MM:dd");
+	
 	@Autowired	// SpEL
     public void setValues(@Value("#{'${upload.file.dir}'}") String value) {
 		if (! ObjectUtils.isEmpty(value)) {
@@ -49,17 +54,31 @@ public class AttachFileCleaner {
 		// path에서 모든 파일을 바탕으로 DB에 등록되지 않은 미아상태의 파일에 대하여 
 		//DB에 등록되어 있는.. 잘 관리중인 첨부 정보들
 		List<AttachFileDTO> listManaged = attachFileRepository.findByPathNameIn(dur);
-		List<File> listUploadedFiles = new ArrayList<>();
-		for (String aDay :dur) {
-			String fullPath = uploadDir + File.separator + aDay.replace(DATE_STRING_DELIMETER, File.separator.charAt(0));
-			
-			
-		}
 		//path만들기
-		//String fullPath2 = uploadDir + File.separator + dur.getSecondVal().replace("_", File.separator);
+		Set<File> listUploadedFiles = new HashSet<>();
+		for (String aDay :dur) {
+			String fullPath = uploadDir + File.separator
+					+ aDay.replace(DATE_STRING_DELIMETER, File.separator.charAt(0));
+		    File[] arrFile = new File(fullPath).listFiles();
+		    if(arrFile !=null);
+		    	Stream.of(new File(fullPath).listFiles())
+		  	      .filter(file -> !file.isDirectory())
+		  	      .forEach(file -> listUploadedFiles.add(file));
+		}
 		//미아상태인 파일에 대하여
+		//잘 관리중인 첨부 정보들
+		Set<String> setManagedFile = listManaged.stream()
+				.map(AttachFileDTO::pureFileName).collect(Collectors.toSet());
+		listManaged.stream().filter(AttachFileDTO::hasThumbnail)
+				.map(AttachFileDTO::thumbFileName)
+				.forEach(fn->setManagedFile.add(fn));
+		Set<File> orpantFiles = listUploadedFiles.stream().filter(file->
+			! setManagedFile.contains(file.getName())
+			).collect(Collectors.toSet());
 		//청소
-
+		for (File f : orpantFiles) {
+			f.delete();
+		}
 	}
 	
 	private List<String> getDuration(){
@@ -69,14 +88,11 @@ public class AttachFileCleaner {
 		//Date now = new Date();
 		
 		calendar.add(calendar.DATE, -4);
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 5; i++) {
 			calendar.add(calendar.DATE, 1);
 			String aDay= sdf.format(calendar.getTime());
 			ret.add(aDay);
 		}
 		return ret;
 	}
-	
-	
-
 }

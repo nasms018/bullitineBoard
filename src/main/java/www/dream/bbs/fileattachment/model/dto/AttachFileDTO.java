@@ -48,11 +48,11 @@ public class AttachFileDTO {
 	}
 
 	public File findThumnailFile(String uploadDir) {
-		return new File(uploadDir + File.separator + convertToPath() + File.separator + THUMBNAIL_FILE_PREFIX + uuid + THUMBNAIL_FILE_POSTFIX);
+		return new File(uploadDir + File.separator + convertToPath() + File.separator + thumbFileName());
 	}
 
 	public File findUploadedFile(String uploadDir) {
-		return new File(uploadDir + File.separator + convertToPath() + File.separator + uuid + '_' + originalFilePureName);
+		return new File(uploadDir + File.separator + convertToPath() + File.separator + pureFileName());
 	}
 
 	public void setContentType(PlaybleContentTypes contentType) {
@@ -67,5 +67,14 @@ public class AttachFileDTO {
 	private String convertToPath() {
 		return pathName.replace(AttachFileCleaner.DATE_STRING_DELIMETER, File.separator.charAt(0));
 	}
+	private String pureFileName() {
+		return uuid + '_' + originalFilePureName;
+	}
+	private boolean hasThumbnail() {
+		return contentType.isThumbnailTarget();
+	}
 
+	private String thumbFileName() {
+		return THUMBNAIL_FILE_PREFIX + uuid + '_' + originalFilePureName;
+	}
 }

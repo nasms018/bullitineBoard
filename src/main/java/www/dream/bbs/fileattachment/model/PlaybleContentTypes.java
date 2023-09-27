@@ -20,12 +20,12 @@ import www.dream.bbs.fileattachment.model.dto.AttachFileDTO;
 public enum PlaybleContentTypes {
 	image(true), video(true), audio(false), unknown(false);
 
-	private boolean isThumbnailTarget;
-	
-	private PlaybleContentTypes(boolean isThumbnailTarget) {
-		this.isThumbnailTarget = isThumbnailTarget;
+	public boolean isThumbnailTarget() {
+		return isThumbnailTarget;
 	}
-	
+
+	private boolean isThumbnailTarget;
+
 	private static PlaybleContentTypes getContentType(String contentType) {
 		for (PlaybleContentTypes targetType : PlaybleContentTypes.values()) {
 			if (contentType.startsWith(targetType.toString())) {
@@ -62,4 +62,10 @@ public enum PlaybleContentTypes {
 		}
 		return playbleContentType;
 	}
+	
+	
+	private PlaybleContentTypes(boolean isThumbnailTarget) {
+		this.isThumbnailTarget = isThumbnailTarget;
+	}
+	
 }
