@@ -88,11 +88,11 @@ public class AttachFileCleaner {
 		Calendar calendar = Calendar.getInstance();
 		//Date now = new Date();
 		
-		calendar.add(calendar.DATE, -4); //몇일전부터 검사할지
-		for (int i = 0; i < 5; i++) { //몇일분을 검사할지
-			calendar.add(calendar.DATE, 1);
-			String aDay= sdf.format(calendar.getTime());
+		calendar.add(calendar.DATE, -3); //몇일전부터 검사할지
+		for (int i = 0; i < 2; i++) { //몇일분을 검사할지
+			String aDay= sdf.format(calendar.getTime()); 
 			ret.add(aDay);
+			calendar.add(calendar.DATE, 1);
 		}
 		return ret;
 	}
