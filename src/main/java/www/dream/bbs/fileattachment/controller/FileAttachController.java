@@ -6,14 +6,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.text.Normalizer;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,10 +33,10 @@ import www.dream.bbs.party.model.PartyVO;
 
 @RestController		//Container에 담기도록 지정
 @RequestMapping("/")
-@PropertySource("classpath:application.properties")
 public class FileAttachController {
 	@Autowired
 	private AttachFileCleaner attachFileCleaner;
+	
 	/**
 	 * 게시글 등록 이전에 미리 첨부파일 전송의 목적은?
 	 * 무거운 것 미리 올려두자
@@ -47,9 +45,10 @@ public class FileAttachController {
 	public ResponseEntity<List<AttachFileDTO>> uploadAttachedMultiFiles(@AuthenticationPrincipal PartyVO user,
 			@RequestParam MultipartFile[] attachFiles) throws BusinessException {
 		List<AttachFileDTO> listRet = new ArrayList<>();
+
 		String pathName = getFolder();
-		String sudPath = pathName.replace(AttachFileCleaner.DATE_STRING_DELIMETER, File.separatorChar);
-		File uploadPath = new File(attachFileCleaner.getUploadDir(), pathName);
+		String subPath = pathName.replace(AttachFileCleaner.DATE_STRING_DELIMETER, File.separatorChar);
+		File uploadPath = new File(attachFileCleaner.getUploadDir(), subPath);
 		if (! uploadPath.exists()) {
 			uploadPath.mkdirs();	//여러 계층의 Folder를 한번에 만들기
 		}
@@ -94,7 +93,7 @@ public class FileAttachController {
 		}
 		return result;
 	}
-	
+
 	@PostMapping("/anonymous/getOriginalFile")
 	@ResponseBody
 	public ResponseEntity<byte[]> getOriginalFile(@RequestBody AttachFileDTO afdto) {
@@ -109,13 +108,10 @@ public class FileAttachController {
 		}
 		return result;
 	}
-	
+
 	private String getFolder() {
-
 		Date date = new Date();
-
-		return attachFileCleaner.SDF.format(date); //2023:09:23
-	
+		return AttachFileCleaner.SDF.format(date);	//2023:09:19
 	}
 
 }
