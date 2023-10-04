@@ -45,7 +45,8 @@ public class AttachFileCleaner {
 	}
 	//PostService BoardService PartyService... 과 연결되어 있으면 어떻게 할까?
 	//Framework화 시켜야하지 않을까
-	@Scheduled(cron = "0 1 * * * *")
+	//매일이 시작할 때 실행
+	@Scheduled(cron = "0 0 0 * * *") //초 분 시 일 월 요일 년도(생략가능)
 	public void clearAttachFile() throws InterruptedException {
 		System.out.println("clearAttachFile 실행시작");
 		// 어제 등록된 첨부 정보를 DB에서 확보
@@ -80,15 +81,15 @@ public class AttachFileCleaner {
 			f.delete();
 		}
 	}
-	
+	/**검사 할 일 수만큼의 날짜 생성하기*/
 	private List<String> getDuration(){
 		List<String> ret = new ArrayList<>();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy:MM:dd");
 		Calendar calendar = Calendar.getInstance();
 		//Date now = new Date();
 		
-		calendar.add(calendar.DATE, -4);
-		for (int i = 0; i < 5; i++) {
+		calendar.add(calendar.DATE, -4); //몇일전부터 검사할지
+		for (int i = 0; i < 5; i++) { //몇일분을 검사할지
 			calendar.add(calendar.DATE, 1);
 			String aDay= sdf.format(calendar.getTime());
 			ret.add(aDay);
