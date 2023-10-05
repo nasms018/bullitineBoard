@@ -67,14 +67,14 @@ public class AttachFileDTO {
 	private String convertToPath() {
 		return pathName.replace(AttachFileCleaner.DATE_STRING_DELIMETER, File.separator.charAt(0));
 	}
-	private String pureFileName() {
+	public String pureFileName() {
 		return uuid + '_' + originalFilePureName;
 	}
-	private boolean hasThumbnail() {
+	public boolean hasThumbnail() {
 		return contentType.isThumbnailTarget();
 	}
 
-	private String thumbFileName() {
+	public String thumbFileName() {
 		return THUMBNAIL_FILE_PREFIX + uuid + '_' + originalFilePureName;
 	}
 }
