@@ -16,7 +16,7 @@ import www.dream.bbs.board.service.BoardService;
 import www.dream.bbs.party.model.PartyVO;
 import www.dream.bbs.party.service.PartyService;
 
-@RestController		//Container에 담기도록 지정
+@RestController	
 @RequestMapping("/bb")
 public class BoardController {
 	@Autowired

@@ -12,8 +12,7 @@ import www.dream.bbs.framework.model.Entity;
 public class BoardVO extends Entity {
 	private String name;
 	private String descrip;
-	private long postCnt = 0; // 총 게시물 개수
-
+	private String postCnt;
 	public BoardVO(String id) {
 		super(id);
 	}
@@ -21,14 +20,14 @@ public class BoardVO extends Entity {
 	/**
 	 * 사용자로 부터 정보가 만들어 질 때 사용
 	 */
-	public BoardVO(String name, String descrip) {
+	public BoardVO(String name, String descrip,String postCnt) {
 		this.name = name;
 		this.descrip = descrip;
+		this.postCnt = postCnt;
 	}
 
 	@Override
 	public String toString() {
-		return "BoardVO [" + super.toString() + ", name=" + name + ", descrip=" + descrip + ", postCnt=" + postCnt
-				+ "]";
+		return "BoardVO [" + super.toString() + ", name=" + name + ", descrip=" + descrip + "]";
 	}
 }
